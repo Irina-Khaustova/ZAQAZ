@@ -85,6 +85,8 @@ function Authorization() {
     setPhoneValue("");
   };
 
+  console.log(window.location.origin);
+
   return (
     <>
       <Container
