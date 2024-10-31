@@ -142,3 +142,20 @@
   src: url("../../src//fonts/nunito-sans-v15-cyrillic_latin-900italic.woff2")
     format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
+.scroll-to-top {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  /* This will snap the modal content to the top on open */
+  animation: scrollToTop 0.1s ease-out;
+}
+
+@keyframes scrollToTop {
+  from {
+    scroll-behavior: auto;
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

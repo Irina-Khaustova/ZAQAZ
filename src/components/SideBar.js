@@ -18,9 +18,9 @@ function SideBar() {
   const location = useLocation(); // Получаем текущий URL
 
   const menuItems = [
-    { text: 'Home', icon: <MyIconCategory />, link: '/category' },
-    { text: 'Orders', icon: <MyIconOrders />, link: '/ordersList' },
-    { text: 'Products', icon: <MyIconGoods />, link: '/goods' },
+    { text: 'Категории/подкатегории', icon: <MyIconCategory />, link: '/category' },
+    { text: 'Заказы', icon: <MyIconOrders />, link: '/ordersList' },
+    { text: 'Товары', icon: <MyIconGoods />, link: '/products' },
   ];
 
 
@@ -30,13 +30,14 @@ function SideBar() {
         disableGutters
         maxWidth="false"
         sx={{
-          width: "23%",
-          margin: "0",
-          paddingLeft: "24px",
-          paddingRight: "24px",
-          paddingTop: "25px",
+          flex: "0 0 23%", 
+          maxWidth: "none", 
+          paddingLeft: "28px",
+          paddingRight: "20px",
+          paddingTop: "26px",
           display: "flex",
-          
+          flexDirection: "column", 
+          boxSizing: "border-box",
         }}
       >
         <Box
@@ -47,32 +48,46 @@ function SideBar() {
             width: "100%",
           }}
         >
+          <Box>
           <MyIconZaqaz
-            style={{ width: "102px", height: "28px", marginBottom: "52px" }}
+            style={{ width: "102px", marginLeft: "10px" }}
           />
+          </Box>
         
-    <List sx={{marginLeft: "0", marginRight: "0", width: "100%"}}>
+    <List sx={{width: "100%", marginTop: "36px"}}>
       {menuItems.map((item) => (
         <ListItem
+          
           key={item.text}
           component={NavLink}
           to={item.link}
           sx={{
-            paddingLeft: "10px",
-            marginBottom: "8px",
+            paddingLeft: "15px",
+            marginBottom: "3px",
             borderRadius: "16px",
             flexGrow: "1",
             backgroundColor: location.pathname === item.link ? 'rgba(246, 248, 249, 1)' : 'inherit',
-            border: location.pathname === item.link ? '1px solid rgba(246, 248, 249, 1)' : 'none',
+            
+            border: '1px solid transparent',
             '&:hover': {
               backgroundColor: 'lightgray',
               border: "1px solid rgba(246, 248, 249, 1)",
               borderRadius: "16px",
             },
+            '&:active': {
+              backgroundColor: 'lightgray',
+              border: "1px solid rgba(246, 248, 249, 1)",
+              borderRadius: "16px",
+            },
+            '&.Mui-focused': {
+      backgroundColor: 'inherit', 
+      color: 'rgba(33, 33, 33, 1)', 
+    },
             
           }}
+          
         >
-          <ListItemIcon>{item.icon}</ListItemIcon>
+          <ListItemIcon  sx={{minWidth: '30px'}}>{item.icon}</ListItemIcon>
           <ListItemText
             primary={item.text}
             primaryTypographyProps={{

@@ -11,3 +11,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:active {
+  color: inherit;
+}
+
+a:focus {
+  color: inherit;
+}
+
+.scroll-to-top {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  /* This will snap the modal content to the top on open */
+  animation: scrollToTop 0.1s ease-out;
+}
+
+@keyframes scrollToTop {
+  from {
+    scroll-behavior: auto;
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

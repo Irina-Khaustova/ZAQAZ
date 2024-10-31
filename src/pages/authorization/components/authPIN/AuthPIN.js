@@ -16,9 +16,7 @@ function AuthPIN({ code, handleCodeChange, phoneNumber, handleSubmit }) {
   const handleChange = (e, index) => {
     const value = e.target.value;
     if (/^[0-9]$/.test(value)) {
-      // Вводим только цифру
-      handleCodeChange(index, value); // Обновляем состояние в родителе
-
+      handleCodeChange(index, value);
       // Переводим фокус на следующий инпут, если текущий заполнен
       if (index < 3) {
         inputsRef.current[index + 1].focus();
@@ -29,12 +27,10 @@ function AuthPIN({ code, handleCodeChange, phoneNumber, handleSubmit }) {
   // Обработчик для удаления цифры и перемещения назад
   const handleBackspace = (e, index) => {
     if (e.key === "Backspace") {
-      // Если инпут уже пуст, перемещаем фокус на предыдущий инпут
       if (code[index] === "" && index > 0) {
         inputsRef.current[index - 1].focus();
       } else {
-        // Если инпут не пуст, очищаем текущее значение
-        handleCodeChange(index, ""); // Очищаем текущее поле
+        handleCodeChange(index, "");
       }
     }
   };
@@ -87,10 +83,10 @@ function AuthPIN({ code, handleCodeChange, phoneNumber, handleSubmit }) {
                 fontSize: "16px",
                 fontWeight: "400",
                 lineHeight: "20px",
-                marginBottom: "40px",
+                marginBottom: "33px",
               }}
             >
-              {`Чтобы подтвердить учетную запись, введите 4-значный код, отправленный на номер ${phoneNumber}`}
+              {`Чтобы подтвердить учетную запись, введите 4-значный код, отправленный на номер + ${phoneNumber}`}
             </Typography>
 
             <form
@@ -111,20 +107,20 @@ function AuthPIN({ code, handleCodeChange, phoneNumber, handleSubmit }) {
                     inputProps={{
                       maxLength: 1,
                       style: { textAlign: "center" },
-                    }} // Ограничение в 1 символ
+                    }}
                     value={digit}
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => handleBackspace(e, index)}
-                    inputRef={(el) => (inputsRef.current[index] = el)} // Ссылка на инпут
+                    inputRef={(el) => (inputsRef.current[index] = el)}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "15px",
                         "& fieldset": {
-                          borderColor: "rgba(235, 235, 235, 1)", // Цвет границы по умолчанию
+                          borderColor: "rgba(235, 235, 235, 1)",
                         },
 
                         "&.Mui-focused fieldset": {
-                          borderColor: "blue", // Цвет границы при фокусе
+                          borderColor: "rgba(255, 149, 0, 1)",
                         },
                       },
                       marginTop: "8px",
@@ -141,7 +137,7 @@ function AuthPIN({ code, handleCodeChange, phoneNumber, handleSubmit }) {
                 color="secondary"
                 disableElevation
                 onClick={handleSubmit}
-                disabled={!isFormComplete} // Кнопка активна только если все поля заполнены
+                disabled={!isFormComplete}
                 sx={{
                   height: "56px",
                   border: "1px solid rgba(246, 248, 249, 1)",
@@ -151,16 +147,26 @@ function AuthPIN({ code, handleCodeChange, phoneNumber, handleSubmit }) {
               >
                 Подтвердить
               </Button>
-              <Typography
-                variant="h5"
+              <Box
                 sx={{
                   fontSize: "14px",
                   fontWeight: "400",
                   color: "rgba(66, 66, 66, 1)",
+                  display: "flex",
+                  flexDirection: "row",
                 }}
               >
-                Не получили код? Отправить снова
-              </Typography>
+                <Typography
+                  variant="text15Bold"
+                  sx={{ marginRight: "5px", color: "#B7B7B7" }}
+                >
+                  {" "}
+                  Не получили код?{" "}
+                </Typography>{" "}
+                <Typography variant="text15Medium" sx={{ color: "#FF9500" }}>
+                  Отправить снова
+                </Typography>
+              </Box>
               <Box mt={5}></Box>
             </form>
           </Container>

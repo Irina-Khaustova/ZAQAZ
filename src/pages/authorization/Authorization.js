@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import { Box, Container } from "@mui/material";
 import { useState } from "react";
-import { useLogInMutation, logIn } from "../../api/Api";
+import { useLogInMutation } from "../../api/Api";
 import AuthorizationForm from "./components/authorizationForm/AuthorizationForm";
 import img from "../../image/Variant15.png";
-import { ReactComponent as MyIcon } from "../../image/zaqaz.svg"; // Импорт SV
+import { ReactComponent as MyIcon } from "../../image/zaqaz.svg";
 import AuthPIN from "./components/authPIN/AuthPIN";
 import AuthError from "./components/authError/AuthError";
+import { useDispatch } from "react-redux";
+import { putAuth } from "./AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 function Authorization() {
   const [phoneValue, setPhoneValue] = useState("");
@@ -15,54 +18,77 @@ function Authorization() {
   const [isAuthPin, setIsAuthPin] = useState(false);
   const [helperText, setHelperText] = useState("");
   const [isShowPin, setIsShowPin] = useState(false);
-  // const [anchorEl, setAnchorEl] = useState(null);
-  // const [selectedItem, setSelectedItem] = useState("Русский");
   const [isErrorAuth, setIsErrorAuth] = useState(false);
   const [code, setCode] = useState(["", "", "", ""]); // Состояние для 4 инпутов
   const [errorText, setErrorText] = useState("");
 
-  // const open = Boolean(anchorEl);
-
-  const [logIn, result] = useLogInMutation();
+  const [logIn] = useLogInMutation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsAuthPin(isValidPhone);
   }, [isValidPhone]);
 
+  const dispatch = useDispatch();
+
   const onSigninSubmit = async (e) => {
-    console.log("отправка запроса");
     try {
       const userData = await logIn({
         pin: code.join(""),
-        cellphone: phoneValue,
+        cellphone: phoneValue.replace(/[^0-9]/g, ''),
       }).unwrap();
-
-      // Можно здесь сохранить токен или выполнить перенаправление
+      dispatch(putAuth(userData.key));
+      navigate("/category");
     } catch (err) {
-      
       setErrorText(err.data.errorDesc);
       setIsErrorAuth(true);
     }
   };
 
-  const handlePhoneChange = (event) => {
-    setPhoneValue(event.target.value);
-    validatePhone(event.target.value);
+  const handlePhoneChange = (e) => {
+    const inputValue = e.target.value; // Получаем текущее значение
+    const numericValue = inputValue.replace(/\D/g, ''); // Убираем все нецифровые символы
+
+    if (numericValue.length > 11) {
+      return; // Ограничиваем ввод до 11 цифр
+    }
+
+    // Обновляем состояние телефона с отформатированным значением
+    const formattedPhone = formatPhoneNumber(numericValue);
+    setPhoneValue(formattedPhone);
+    validatePhone(formattedPhone);
+  };
+
+  const formatPhoneNumber = (value) => {
+    if (value.length === 0) return '';
+
+    let formatted = '+7 ';
+    if (value.length >= 1) {
+      formatted += `(${value.slice(1, 4)}`; 
+    }
+    if (value.length >= 4) {
+      formatted += `) ${value.slice(4, 7)}`; 
+    }
+    if (value.length >= 7) {
+      formatted += ` ${value.slice(7, 9)}`; 
+    }
+    if (value.length >= 9) {
+      formatted += ` ${value.slice(9, 11)}`; 
+    }
+
+    return formatted.trim(); 
   };
 
   const validatePhone = (value) => {
-    const phoneRegex = /^([0-9]{11})?$/;
+    const phoneRegex = /^\+7 \(\d{3}\) \d{3} \d{2} \d{2}$/;
     if (!phoneRegex.test(value)) {
-      console.log("not valid");
       setPhoneError(true);
-      setHelperText("Пожалуйста введите корректный номер");
+      setHelperText("Пожалуйста, введите корректный номер");
       setIsValidPhone(false);
     } else {
-      console.log("valid");
       setPhoneError(false);
       setHelperText("");
       setIsValidPhone(true);
-      console.log(isValidPhone);
     }
   };
 
@@ -85,8 +111,6 @@ function Authorization() {
     setPhoneValue("");
   };
 
-  console.log(window.location.origin);
-
   return (
     <>
       <Container
@@ -102,7 +126,7 @@ function Authorization() {
       >
         <Box
           maxWidth="false"
-          sx={{ width: "0.7", margin: "0", paddingLeft: "0" }}
+          sx={{ width: "72%", margin: "0", paddingLeft: "0" }}
         >
           <Box
             sx={{
@@ -119,7 +143,12 @@ function Authorization() {
           >
             <Box>
               <MyIcon
-                style={{ width: "102px", height: "28px", marginLeft: "108px" }}
+                style={{
+                  width: "102px",
+                  height: "28px",
+                  marginLeft: "108px",
+                  marginBottom: "32px",
+                }}
               />
             </Box>
             <Box
@@ -131,39 +160,7 @@ function Authorization() {
                 marginRight: "108px",
               }}
             >
-              <Box sx={{ marginRight: "0" }}>
-                {/* Кнопка для открытия меню
-                <Button
-                  aria-controls={open ? "basic-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleClick}
-                  variant="contained"
-                >
-                  {selectedItem}
-                </Button> */}
-
-                {/* Выпадающее меню */}
-                {/* <Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={() => handleClose()}
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button",
-                  }}
-                >
-                  <MenuItem onClick={() => handleClose("Русский")}>
-                    Русский
-                  </MenuItem>
-                  <MenuItem onClick={() => handleClose("Английский")}>
-                    Английский
-                  </MenuItem>
-                  <MenuItem onClick={() => handleClose("Казахский")}>
-                    Казахский
-                  </MenuItem>
-                </Menu> */}
-              </Box>
+              <Box sx={{ marginRight: "0" }}></Box>
             </Box>
           </Box>
           {!isShowPin ? (
@@ -194,7 +191,7 @@ function Authorization() {
         <Box
           sx={{
             height: "100vh",
-            width: "0.3",
+            width: "30%",
             margin: "0",
             paddingLeft: "0",
             backgroundImage: `url(${img})`,

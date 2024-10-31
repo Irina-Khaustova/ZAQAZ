@@ -18,8 +18,8 @@ function AuthorizationForm({
   errorText,
   onValid,
 }) {
-  
   useEffect(() => {}, [onValid]);
+  const inputStyle = { WebkitBoxShadow: "0 0 0 1000px white inset" };
 
   return (
     <>
@@ -44,7 +44,7 @@ function AuthorizationForm({
         >
           <Container
             disableGutters
-            maxWidth="30%"
+            maxWidth="30.5%"
             sx={{ paddingLeft: "0", height: "60%" }}
           >
             <Typography
@@ -102,17 +102,27 @@ function AuthorizationForm({
                 value={value}
                 type="tel"
                 onChange={onPhoneChange}
+                inputProps={{ style: inputStyle }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "15px", // Закругленные углы
+                    borderRadius: "15px",
+                    backgroundColor: "transparent",
                     "& fieldset": {
-                      borderColor: error ? "red" : "rgba(235, 235, 235, 1)", // Цвет границы с учетом ошибки
+                      borderColor: error ? "red" : "rgba(235, 235, 235, 1)",
+                      backgroundColor: "wite",
                     },
                     "&:hover fieldset": {
-                      borderColor: error ? "red" : "rgba(255, 149, 0, 1)", // Цвет при наведении
+                      borderColor: error ? "red" : "rgba(255, 149, 0, 1)",
+                      backgroundColor: "wite",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: error ? "red" : "rgba(255, 149, 0, 1)", // Цвет при фокусе
+                      borderColor: error ? "red" : "rgba(255, 149, 0, 1)",
+                      backgroundColor: "wite",
+                    },
+                    "&:-webkit-autofill": {
+                      WebkitBoxShadow:
+                        "0 0 0 1000px rgba(255, 255, 255, 0) inset",
+                      transition: "background-color 5000s ease-in-out 0s",
                     },
                   },
                   marginTop: "8px",
@@ -127,7 +137,7 @@ function AuthorizationForm({
                 color="secondary"
                 disableElevation
                 onClick={onSubmit}
-                disabled={!onValid || value === ""} // Кнопка активна только если все поля заполнены
+                disabled={!onValid || value === ""}
                 sx={{
                   height: "56px",
                   border: "1px solid rgba(246, 248, 249, 1)",

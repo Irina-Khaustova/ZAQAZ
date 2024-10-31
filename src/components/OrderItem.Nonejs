@@ -1,0 +1,70 @@
+import React from "react";
+import { Box, Typography } from "@mui/material";
+
+function OrderItem({
+  itemTitle,
+  supplierName,
+  quantity,
+  price,
+  status,
+  onClick,
+  variant
+}) {
+  return (
+    <>
+      <Box
+        onClick={onClick}
+        sx={{
+          height: "61px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid rgba(246, 248, 249, 1)",
+        }}
+      >
+        <Box
+          sx={{
+            width: "14.5%",
+          }}
+        >
+          <Typography variant={variant}>{itemTitle}</Typography>
+        </Box>
+        <Box
+          sx={{
+            flexGrow: "1",
+          }}
+        >
+          <Typography variant={variant}>
+            {supplierName}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "17%",
+          }}
+        >
+          <Typography variant={variant}>{quantity}</Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "18.5%",
+          }}
+        >
+          <Typography variant={variant}>{`${price}, тг`}</Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "18%",
+          }}
+        >
+          <Typography variant={variant}>
+            {status}
+          </Typography>
+        </Box>
+      </Box>
+    </>
+  );
+}
+
+export default OrderItem;

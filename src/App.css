@@ -24,9 +24,6 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
 
 @keyframes App-logo-spin {
   from {
@@ -34,5 +31,22 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.scroll-to-top {
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  /* This will snap the modal content to the top on open */
+  animation: scrollToTop 0.1s ease-out;
+}
+
+@keyframes scrollToTop {
+  from {
+    scroll-behavior: auto;
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
   }
 }

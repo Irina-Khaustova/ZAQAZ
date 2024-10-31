@@ -1,0 +1,217 @@
+[
+  {
+    "id": 6,
+    "orderItems": [],
+    "orderNum": 7,
+    "status": "WAITING",
+    "supplierName": "Something",
+    "orderDate": "2024-11-12T08:30:00",
+    "cost": 100,
+    "marketplace": "Казпочта",
+    "imageLink": null
+  },
+  {
+    "id": 4,
+    "orderItems": [],
+    "orderNum": 5,
+    "status": "WAITING",
+    "supplierName": "TOO Banna",
+    "orderDate": "2024-01-22T08:30:00",
+    "cost": 10000,
+    "marketplace": "Казпочта",
+    "imageLink": null
+  },
+  {
+    "id": 5,
+    "orderItems": [
+      {
+        "id": 6,
+        "order": null,
+        "item": {
+          "id": 666,
+          "title": "Test 2",
+          "description": "",
+          "category": {
+            "id": 96,
+            "name": "Cпорт",
+            "isHidden": false,
+            "store": {
+              "id": 26,
+              "title": "Товары Алматы",
+              "description": "Промышленные товары из Китая",
+              "logo": "https://images.freeimages.com/fic/images/icons/447/apple_tv/256/apple_logo.png",
+              "largeLogo": "https://media.idownloadblog.com/wp-content/uploads/2019/03/Logo-desktop-Apple-Credit-Card-wallpaper-AR72014-v3.png",
+              "color": "#330b8a",
+              "extId": "f9043c07-e394-4b50-a256-aadbf1ce6573",
+              "latitude": null,
+              "longitude": 76.9286,
+              "baseUrl": "https://celinefloral.posiflora.com/api",
+              "deliveryPrice": 15000,
+              "city": "Алматы",
+              "roles": []
+            },
+            "extId": null,
+            "color": null,
+            "parentCategory": {
+              "id": 94,
+              "name": "Авто ",
+              "isHidden": false,
+              "store": {
+                "id": 26,
+                "title": "Товары Алматы",
+                "description": "Промышленные товары из Китая",
+                "logo": "https://images.freeimages.com/fic/images/icons/447/apple_tv/256/apple_logo.png",
+                "largeLogo": "https://media.idownloadblog.com/wp-content/uploads/2019/03/Logo-desktop-Apple-Credit-Card-wallpaper-AR72014-v3.png",
+                "color": "#330b8a",
+                "extId": "f9043c07-e394-4b50-a256-aadbf1ce6573",
+                "latitude": null,
+                "longitude": 76.9286,
+                "baseUrl": "https://celinefloral.posiflora.com/api",
+                "deliveryPrice": 15000,
+                "city": "Алматы",
+                "roles": []
+              },
+              "extId": null,
+              "color": null,
+              "parentCategory": null,
+              "images": []
+            },
+            "images": []
+          },
+          "price": 1000,
+          "active": true,
+          "extId": null,
+          "measureUnit": null,
+          "tags": [],
+          "sku": null,
+          "images": [],
+          "technicalSpecifications": {
+            "id": 564,
+            "grossWeight": 2000.0,
+            "netWeight": 3000.0,
+            "dimensions": "",
+            "voltage": 0,
+            "power": 0,
+            "current": 0,
+            "additionalInfo1": "",
+            "additionalInfo2": "",
+            "additionalInfo3": ""
+          },
+          "type": { "id": 5, "name": "Type of item TEST " },
+          "quantity": null
+        },
+        "quantity": 234,
+        "status": "READY_FOR_DELIVERY"
+      },
+      {
+        "id": 1,
+        "order": null,
+        "item": {
+          "id": 9,
+          "title": "Тест 12",
+          "description": "Тестовый 12",
+          "category": {
+            "id": 3,
+            "name": "Товары на складе",
+            "isHidden": false,
+            "store": {
+              "id": 3,
+              "title": "string",
+              "description": "string",
+              "logo": "string",
+              "largeLogo": "string",
+              "color": "string",
+              "extId": "string",
+              "latitude": null,
+              "longitude": 0.0,
+              "baseUrl": "string",
+              "deliveryPrice": 0,
+              "city": "string",
+              "roles": [{ "id": 4, "position": "string" }]
+            },
+            "extId": "",
+            "color": "",
+            "parentCategory": null,
+            "images": []
+          },
+          "price": 0,
+          "active": true,
+          "extId": "string",
+          "measureUnit": { "id": 1, "title": "", "divValue": 1, "step": 1 },
+          "tags": [{ "id": 1, "name": "Тест", "color": "#FFFFFF" }],
+          "sku": "",
+          "images": [],
+          "technicalSpecifications": null,
+          "type": null,
+          "quantity": null
+        },
+        "quantity": 2,
+        "status": "READY_FOR_DELIVERY"
+      }
+    ],
+    "orderNum": 6,
+    "status": "WAITING",
+    "supplierName": "OOO All",
+    "orderDate": "2024-11-12T08:30:00",
+    "cost": 83000,
+    "marketplace": "Казпочта",
+    "imageLink": null
+  },
+  {
+    "id": 2,
+    "orderItems": [
+      {
+        "id": 5,
+        "order": null,
+        "item": {
+          "id": 9,
+          "title": "Тест 12",
+          "description": "Тестовый 12",
+          "category": {
+            "id": 3,
+            "name": "Товары на складе",
+            "isHidden": false,
+            "store": {
+              "id": 3,
+              "title": "string",
+              "description": "string",
+              "logo": "string",
+              "largeLogo": "string",
+              "color": "string",
+              "extId": "string",
+              "latitude": null,
+              "longitude": 0.0,
+              "baseUrl": "string",
+              "deliveryPrice": 0,
+              "city": "string",
+              "roles": [{ "id": 4, "position": "string" }]
+            },
+            "extId": "",
+            "color": "",
+            "parentCategory": null,
+            "images": []
+          },
+          "price": 0,
+          "active": true,
+          "extId": "string",
+          "measureUnit": { "id": 1, "title": "", "divValue": 1, "step": 1 },
+          "tags": [{ "id": 1, "name": "Тест", "color": "#FFFFFF" }],
+          "sku": "",
+          "images": [],
+          "technicalSpecifications": null,
+          "type": null,
+          "quantity": null
+        },
+        "quantity": 1,
+        "status": "REQUESTED"
+      }
+    ],
+    "orderNum": 3,
+    "status": "WAITING",
+    "supplierName": "ОптЛист",
+    "orderDate": "2024-08-15T08:30:00",
+    "cost": 3050,
+    "marketplace": "Казпочта",
+    "imageLink": null
+  }
+]
