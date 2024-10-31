@@ -1,11 +1,8 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { ReactComponent as MyIconArrowOrange } from "../../../image/arrow-right-orange.svg";
-import { useNavigate } from "react-router-dom";
 import { ReactComponent as MyIconButtonEdit } from "../../../image/edit.svg";
 
-
-import { useDispatch } from "react-redux";
 
 function ProductItem({
   id,

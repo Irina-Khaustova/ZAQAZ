@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { usePutCategoryMutation } from "../../../api/Api";
 
 const ModalEdit = ({ open, close, value }) => {
+  // eslint-disable-next-line
   const [isDisabledDelete, setIsDisabledDelete] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [errorText, setErrorText] = useState("");

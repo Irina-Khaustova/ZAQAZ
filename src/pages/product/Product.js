@@ -16,7 +16,9 @@ function Product() {
   const { id } = useParams();
 
   // параметры для фильтрации
+  // eslint-disable-next-line
   const { data, error, isLoading } = useGetProductQuery(id);
+  // eslint-disable-next-line
   const [deletePost, { isLoading: isDeleting }] = useDeletePostMutation()
   const dispatch = useDispatch();
   const navigate = useNavigate();

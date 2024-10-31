@@ -33,7 +33,7 @@ function Products() {
  
 
   //   const dispatch = useDispatch();
-  const {newUrl} = useSelector((state) => state.products)
+ 
   const { data, error, isLoading, refetch } = useGetProductsswithFilerQuery({ request: url, trigger });
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +55,7 @@ function Products() {
     setDataDraw(data)
     setUrl("filter?")
     dispatch(putUrl(url))
-  }, []);
+  }, [data,dispatch,url]);
 
   useEffect(() => {
     dispatch(putUrl(url))
@@ -63,6 +63,7 @@ function Products() {
       // refetch()
     }
     console.log(88888, url)
+    // eslint-disable-next-line
   }, [url, filter, modalEdit]);
 
  
@@ -502,6 +503,7 @@ const handleCheckboxChange = (event) => {
           close={handleToggleModalEdit}
           sendRequest={onSubmit}
           refetch={handleRefetch}
+          onhandleClickDelete={onhandleClickDelete}
           name="edit"
           id="id"
         ></ModalEditProduct>

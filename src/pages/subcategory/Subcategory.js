@@ -4,13 +4,13 @@ import SideBar from "../../components/SideBar.js";
 import { ReactComponent as MyIconSearch } from "../../image/search.svg";
 import Input from "../../components/Input.js";
 import { useGetSubCategoryByIdQuery } from "../../api/Api.js";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ButtonBack from "../../components/ButtonBack.js";
 import { useSelector } from "react-redux";
 import CategoryItem from "../category/components/CategoryItem.js";
-import { category } from "../category/categorySlice.js";
 
 function SubCategory() {
+  // eslint-disable-next-line
   const [idValue, setIdValue] = useState(0);
   const [isModalAdd, setIsModalAdd] = useState(false);
   const [isModalEdit, setIsModalEdit] = useState(false);
@@ -18,7 +18,7 @@ function SubCategory() {
 
   const {id} = useParams();
   
-
+// eslint-disable-next-line
   const dataset = [
     {
       id: 11,
@@ -87,10 +87,10 @@ function SubCategory() {
   // параметры для фильтрации
   const [searchValue, setSearchValue] = useState();
 
-  const { data, error, isLoading, refetch } = useGetSubCategoryByIdQuery(id);
+  const { data, error, isLoading} = useGetSubCategoryByIdQuery(id);
   const { category } = useSelector((state) => state.category);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // при загрузке страницы устанавливаем флаг для запроса списка категорий с сервера
   useEffect(() => {
@@ -131,13 +131,8 @@ function SubCategory() {
   // обработчик клика кнопки Выполнить -- формирование url для запроса
   const handleAddCategory = () => {};
 
-  // обработчик клика на строку товара
-  const handleClickItem = (id) => {
-    navigate(`/order/${id}`);
-  };
-
   // очищаем все фильтры
-  const handleClear = () => {};
+  // const handleClear = () => {};
 
 console.log(data)
 
