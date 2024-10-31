@@ -59,7 +59,7 @@ const CustomTextField = styled(
   },
 }));
 
-const ModalEditProduct = ({ open, close, modalCategory, sendRequest, refetch }) => {
+const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
   const [errorText, setErrorText] = useState({
       category: '',
       parentCategory: '',
@@ -160,52 +160,38 @@ const ModalEditProduct = ({ open, close, modalCategory, sendRequest, refetch }) 
 
   const onSigninSubmitProduct = async () => {
     if (isSubmitting) return; 
-  setIsSubmitting(true); 
+    setIsSubmitting(true); 
 
     const productPayload = {
-      "id": id,
-      "title": inputValues.productName,
-      "description": inputValues.productDescription,
-      "category": {
-        "id": data.category.id,
-        // "name": inputValues.category,
-        // "isHidden": data.category.isHidden,
-        // "store": data.category.store,
-        // "extId": data.category.extId,
-        // "color": data.category.color,
-        // "parentCategory": inputValues.parentCategory,
-        // "images": data.category.images
-      },
-      "price": inputValues.price,
-      "active": data.active,
-      "extId": inputValues.productCode,
-      // "measureUnit": data.measureUnit,
-      // "tags": data.tags,
-      // "sku": data.sku,
-      // "images": inputValues.images,
-      "technicalSpecifications": inputValues.technicalSpecifications,
-      "type": {
-        "id": data.type.id,
-        "name": inputValues.productType,
-      },
-      "quantity": inputValues.quantity
-  }
-    try {
-      putProduct(productPayload).unwrap();
-      refetch();
-      close();
+        id: id,
+        title: inputValues.productName,
+        description: inputValues.productDescription,
+        category: {
+            id: data.category.id,
+        },
+        price: inputValues.price,
+        active: data.active,
+        extId: inputValues.productCode,
+        technicalSpecifications: inputValues.technicalSpecifications,
+        type: {
+            id: data.type.id,
+            name: inputValues.productType,
+        },
+        quantity: inputValues.quantity
+    };
 
-      alert("Успешно");
-      close();
-     
+    try {
+        await putProduct(productPayload).unwrap(); 
+        alert("Успешно");
+        close(); 
     } catch (err) {
-      console.log(err);
-      alert(err.data);
+        console.log(err);
+        alert(err.data);
     } finally {
-      setIsSubmitting(false)
-      sendRequest()
+        setIsSubmitting(false);
+        refetch(); 
     }
-  };
+};
 
   const onhandleClick = (e) => {
     e.preventDefault();
@@ -634,7 +620,7 @@ const ModalEditProduct = ({ open, close, modalCategory, sendRequest, refetch }) 
           variant="contained"
           color="secondary"
           // disabled={isDisabledDelete}
-          onClick={onhandleClick}
+          onClick={onhandleClickDelete}
           sx={{
             height: "56px",
             border: "1px solid rgba(246, 248, 249, 1)",

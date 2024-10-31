@@ -75,6 +75,7 @@ export const Api = createApi({
         };
       },
     }),
+    
     getOrders: builder.query({
       query: () => `v1/order/list`,
     }),
@@ -91,7 +92,8 @@ export const Api = createApi({
       query: (id) => `v1/store/category/${id}/allSubcategory?page=1&size=1`,
     }),
     getProductsswithFiler: builder.query({
-      query: ({request}) => `v1/store/category/item/${request}`
+      query: ({request}) => `v1/store/category/item/${request}`,
+      keepUnusedDataFor: 0,
     }),
     getProduct: builder.query({
       query: (id) => `v1/store/category/item/${id}`,

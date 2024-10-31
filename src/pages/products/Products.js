@@ -19,6 +19,7 @@ import ModalEditProduct from "../../components/ModalEditProduct.js";
 import InputSelect from "../../components/InputSelect.js";
 import ProductItem from "./components/ProductItem.js";
 import { useDispatch, useSelector } from "react-redux";
+import { putUrl } from "../products/ProductsSlice.js";
 
 function Products() {
   const [totalPages, setTotalPages] = useState(0);
@@ -32,7 +33,7 @@ function Products() {
  
 
   //   const dispatch = useDispatch();
-
+  const {newUrl} = useSelector((state) => state.products)
   const { data, error, isLoading, refetch } = useGetProductsswithFilerQuery({ request: url, trigger });
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -53,14 +54,16 @@ function Products() {
   useEffect(() => {
     setDataDraw(data)
     setUrl("filter?")
+    dispatch(putUrl(url))
   }, []);
 
   useEffect(() => {
+    dispatch(putUrl(url))
     if(!modalEdit.isOpenModalEdit) {
-      refetch()
+      // refetch()
     }
     console.log(88888, url)
-  }, [modalEdit]);
+  }, [url, filter, modalEdit]);
 
  
  
@@ -109,8 +112,12 @@ const handleCheckboxChange = (event) => {
   };
 
   const onSubmit = () => {
-    setTrigger(true)
+    setTrigger((prev) => !prev)
     onGetProduct();
+  }
+
+  const onhandleClickDelete = () => {
+
   }
 
   const handleRefetch = () => {
@@ -124,17 +131,18 @@ const handleCheckboxChange = (event) => {
   // обработчик клика кнопки Выполнить -- формирование url для запроса
   const onGetProduct = () => {
     console.log(22, filter)
-    let newUrl = `filter?`
+    let nUrl = `filter?`
       // .concat(currentPage ? `page=${currentPage}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
       .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
       .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
       .concat(filter.minQuantity ? `&minQuantity=${filter.minQuantity}` : "")
-      .concat(filter.minQuantity ? `&maxQuantity=${filter.maxQuantity}` : "")
+      .concat(filter.maxQuantity ? `&maxQuantity=${filter.maxQuantity}` : "")
       .concat(filter.search ? `&search=${filter.search}` : "");
-    setUrl(newUrl);
-    setTrigger(false)
-    console.log(111, newUrl)
+    setUrl(nUrl);
+    setTrigger(false);
+    dispatch(putUrl(url))
+    console.log(111, nUrl)
   };
 
   // очищаем все фильтры
@@ -423,18 +431,18 @@ const handleCheckboxChange = (event) => {
                     variant="contained"
                     onClick={handleClear}
                     sx={{
-                      backgroundColor: "transparent", // Отмена фона
-                      color: "inherit", // Установка цвета текста по умолчанию
+                      backgroundColor: "transparent", 
+                      color: "inherit", 
                       fontSize: "16px",
                       fontWeight: "600",
                       textTransform: "capitalize",
-                      boxShadow: "none", // Убираем тень
+                      boxShadow: "none", 
                       "&:hover": {
-                        backgroundColor: "transparent", // Убираем фон при наведении
-                        color: "inherit", // Установка цвета текста по умолчанию
-                        boxShadow: "none", // Убираем тень
+                        backgroundColor: "transparent", 
+                        color: "inherit", 
+                        boxShadow: "none", 
                       },
-                      border: "none", // Убираем рамку
+                      border: "none", 
                     }}
                   >
                     Сбросить фильтры
