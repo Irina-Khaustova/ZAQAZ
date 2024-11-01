@@ -66,7 +66,6 @@ const ModalAdd = ({ open, close, modalCategory }) => {
       }).unwrap();
       close();
       alert("Успешно");
-      close();
     } catch (err) {
       console.log(err);
       alert(err.data);
