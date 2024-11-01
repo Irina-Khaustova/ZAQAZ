@@ -40,7 +40,7 @@ function Authorization() {
       dispatch(putAuth(userData.key));
       navigate("/category");
     } catch (err) {
-      setErrorText(err.data.errorDesc);
+      // setErrorText(err.data);
       setIsErrorAuth(true);
     }
   };
