@@ -17,10 +17,10 @@ const routes = [
     component: OrdersList,
     exact: true,
   },
-  // {
-  //   path: '/authorization', // Страница деталей заказа
-  //   component: Authorization,
-  // },
+  {
+    path: '/ZAQAZ_GROUP_Web', // Страница деталей заказа
+    component: Authorization,
+  },
   {
     path: '/order/:id', // Страница деталей заказа
     component: Order,

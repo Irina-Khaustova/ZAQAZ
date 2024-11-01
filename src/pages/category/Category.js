@@ -6,7 +6,7 @@ import Input from "../../components/Input.js";
 import CategoryItem from "./components/CategoryItem.js";
 import ModalEdit from "./components/ModalEdit.js";
 import { useGetCategoryQuery } from "../../api/Api.js";
-import ModalAdd from "./components/ModalAdd copy.js";
+import ModalAdd from "./components/ModalAdd.js";
 import { useDispatch } from "react-redux";
 import { putcategory } from "./categorySlice.js";
 
