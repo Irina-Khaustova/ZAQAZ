@@ -2,11 +2,14 @@
     "rewrites": [
       { "source": "/static/:path*", "destination": "/static/:path*" },
       { "source": "/assets/:path*", "destination": "/assets/:path*" },
-      { "source": "/(.*)", "destination": "/index.html" }
+      { "source": "/(.*)", "destination": "/index.html" },
+      { "source": "/api/v1/auth/staff", "destination": "/api/v1/auth/staff.js" }
     ],
     "cache": {
         "patterns": ["node_modules/**", ".next/cache/**"]
       }
+      
+       
   }
 
   
