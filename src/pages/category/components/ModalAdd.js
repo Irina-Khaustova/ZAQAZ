@@ -36,7 +36,7 @@ const ModalAdd = ({ open, close, modalCategory }) => {
 
   const onSigninSubmitCategory = async () => {
     try {
-      const userData = await postCategory({
+      await postCategory({
         parentCategory: { id: null },
         name: inputValue,
         store: {
@@ -47,7 +47,6 @@ const ModalAdd = ({ open, close, modalCategory }) => {
       }).unwrap();
       close();
       alert("Успешно");
-      close();
     } catch (err) {
       console.log(err);
       alert(err.data);
@@ -56,7 +55,7 @@ const ModalAdd = ({ open, close, modalCategory }) => {
 
   const onSigninSubmitSubCategory = async () => {
     try {
-      const userData = await postCategory({
+      await postCategory({
         parentCategory: { id: category?.id },
         name: inputValue,
         store: {
