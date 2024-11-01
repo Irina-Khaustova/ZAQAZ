@@ -15,7 +15,7 @@ import {
 
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
 import { usePostProductMutation } from "../../../api/Api";
-import {ReactComponent as MyIconFile} from "../../../image/file.svg"
+import {ReactComponent as MyIconFile} from "../../../image/file.svg";
 
 const CustomTextField = styled(
   ({ autoFocus = true, fullWidth = true, autoComplete = "off", noBorder = false, ...props }) => (
