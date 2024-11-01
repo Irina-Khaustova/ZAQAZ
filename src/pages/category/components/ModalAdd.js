@@ -24,8 +24,6 @@ const ModalAdd = ({ open, close, modalCategory }) => {
   const [postCategory] = usePostCategoryMutation();
   const { category } = useSelector((state) => state.category);
 
-  console.log();
-
   useEffect(() => {
     if (open) {
       setError(false);
