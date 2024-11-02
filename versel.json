@@ -3,7 +3,7 @@
       { "source": "/static/:path*", "destination": "/static/:path*" },
       { "source": "/assets/:path*", "destination": "/assets/:path*" },
       { "source": "/(.*)", "destination": "/index.html" },
-      { "source": "/api/v1/auth/staff", "destination": "/api/v1/auth/staff.js" }
+      { "source": "/api/v1/:path*", "destination": "http://5.35.104.57:8081/api/v1/:path*" }
     ],
     "cache": {
         "patterns": ["node_modules/**", ".next/cache/**"]
