@@ -291,6 +291,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           paddingTop: "13px",
           position: "relative",
           overflow: "visible",
+          alignContent: "flex-start"
         },
       }}
     >

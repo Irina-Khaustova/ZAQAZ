@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const Api = createApi({
   reducerPath: "myApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api/",
+    baseUrl: "/api",
     // добавляем заголовок с токеном к каждому запросу
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.authToken;
@@ -19,7 +19,7 @@ export const Api = createApi({
       query(body) {
         console.log(body);
         return {
-          url: `v1/auth/staff`,
+          url: `/v1/auth/staff`,
           method: "POST",
           body,
         };
