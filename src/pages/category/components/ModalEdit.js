@@ -14,33 +14,42 @@ import { ReactComponent as MyIconCamera } from "../../../image/icon-camera.svg";
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
 import { useSelector } from "react-redux";
 import { usePutCategoryMutation } from "../../../api/Api";
+// import RequestProgressModal from "../../../components/RequestProgressModal";
 
-const ModalEdit = ({ open, close, value }) => {
+const ModalEdit = ({ open, close, value, refetch, deleteCategory }) => {
   // eslint-disable-next-line
   const [isDisabledDelete, setIsDisabledDelete] = useState(true);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState({
+    name: "",
+    nameEn: ""
+  });
   const [errorText, setErrorText] = useState("");
   const [error, setError] = useState(false);
+  // const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
   const { category } = useSelector((state) => state.category);
 
   useEffect(() => {
-    setInputValue(category?.[0].name);
+    console.log(category.nameEn)
+    setInputValue({name: category?.name, nameEn: category?.nameEn});
   }, [category]);
+
+
 
   const [putCategory] = usePutCategoryMutation();
 
   const onSigninSubmit = async () => {
     try {
       await putCategory({
-        id: `${category[0].id}`,
-        name: `${inputValue}`,
+        id: category.id,
+        name: inputValue.name,
+        nameEn: inputValue.nameEn,
         store: {
-        storeId: 28,
+        id: 26,
         },
         extId: category.extId,
         color: "b9f6ca",
       }).unwrap();
-      alert("Успешно");
+      refetch();
       close();
     } catch (err) {
       alert(err.data);
@@ -51,7 +60,7 @@ const ModalEdit = ({ open, close, value }) => {
     e.preventDefault();
     setError(false);
     setErrorText("");
-    if (inputValue === "") {
+    if (inputValue.name === "" || inputValue.nameEn === "") {
       setErrorText("Введите название!");
       setError(true);
     } else {
@@ -59,14 +68,22 @@ const ModalEdit = ({ open, close, value }) => {
     }
   };
 
+  const onhandleClickDelete = () => {
+    deleteCategory()
+  }
+
   const handleInputChange = (e) => {
     setError(false);
     setErrorText("");
-    setInputValue(e.target.value);
-  };
+    setInputValue((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  }
 
-  return (
-    <Dialog
+  return ( 
+    <>
+    { true && <Dialog
       open={open}
       onClose={close}
       maxWidth={false}
@@ -82,7 +99,7 @@ const ModalEdit = ({ open, close, value }) => {
       sx={{
         "& .MuiDialog-paper": {
           width: "732px",
-          height: "549px",
+          height: "650px",
           borderRadius: "16px",
           backgroundColor: "#FFFFFF",
           boxShadow: "none",
@@ -174,16 +191,57 @@ const ModalEdit = ({ open, close, value }) => {
             </Button>
           </Box>
         </Box>
-        <Typography sx={{ marginTop: "15px" }}>Название</Typography>
+        <Typography sx={{ marginTop: "15px" }}>Название на рус</Typography>
         <TextField
           autoFocus
           margin="dense"
-          id="name"
+          name="name"
           type="text"
           fullWidth
           error={error}
           helperText={errorText}
-          value={inputValue}
+          value={inputValue.name}
+          onChange={handleInputChange}
+          autoComplete="off"
+          sx={{
+            borderRadius: "16px",
+
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "16px",
+
+              "& fieldset": {
+                border: "1px solid #EBEBEB",
+                backgroundColor: "transparent",
+              },
+              "&:hover fieldset": {
+                borderColor: "rgba(200, 200, 200, 1)",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "rgba(255, 149, 0, 1)",
+              },
+              "& input": {
+                color: "#424242",
+                backgroundColor: "transparent",
+              },
+              "& input::placeholder": {
+                color: "#B7B7B7",
+              },
+              "& input:focus": {
+                backgroundColor: "transparent",
+              },
+            },
+          }}
+        />
+         <Typography sx={{ marginTop: "15px" }}>Название на анг</Typography>
+        <TextField
+          autoFocus
+          margin="dense"
+          name="nameEn"
+          type="text"
+          error={error}
+          helperText={errorText}
+          fullWidth
+          value={inputValue.nameEn}
           onChange={handleInputChange}
           autoComplete="off"
           sx={{
@@ -232,7 +290,7 @@ const ModalEdit = ({ open, close, value }) => {
           variant="contained"
           color="secondary"
           disabled={isDisabledDelete}
-          onClick={onhandleClick}
+          onClick={onhandleClickDelete}
           sx={{
             height: "56px",
             border: "1px solid rgba(246, 248, 249, 1)",
@@ -274,7 +332,16 @@ const ModalEdit = ({ open, close, value }) => {
           <Typography variant="text16Bold">Сохранить</Typography>
         </Button>
       </DialogActions>
-    </Dialog>
+    </Dialog>}
+    {/* <RequestProgressModal
+    handleClickButton={handleClickButtonRepeat}
+    open={isOpenRequestProgressModal}
+    close={handleExitModalRequest}
+    error={postCategoryError? postCategoryError: false}
+    isLoading={isLoadingError}
+    isSuccess={isSuccessPostCategory && !isLoadingError}
+  ></RequestProgressModal> */}
+  </>
   );
 };
 

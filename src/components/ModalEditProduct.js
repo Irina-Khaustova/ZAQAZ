@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useSelector } from "react-redux";
 import {
   Dialog,
@@ -7,57 +7,16 @@ import {
   DialogActions,
   Button,
   Typography,
-  TextField,
   Box,
   IconButton,
-  styled,
 } from "@mui/material";
 import { ReactComponent as MyIconExit } from "../image/icon-exit.svg";
 import { usePutProductMutation } from "../api/Api";
 import { ReactComponent as MyIconFile } from "../image/file.svg";
 import { useGetProductQuery } from "../api/Api";
+import CustomTextField from "./CustomTextField";
+import RequestProgressModal from "./RequestProgressModal";
 
-const CustomTextField = styled(
-  ({
-    autoFocus = true,
-    fullWidth = true,
-    autoComplete = "off",
-    noBorder = false,
-    ...props
-  }) => (
-    <TextField
-      autoFocus={autoFocus}
-      fullWidth={fullWidth}
-      autoComplete={autoComplete}
-      {...props}
-    />
-  )
-)(({ noBorder }) => ({
-  borderRadius: "16px",
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "16px",
-    "& fieldset": {
-      border: noBorder ? "none" : "1px solid #EBEBEB", 
-      backgroundColor: "transparent",
-    },
-    "&:hover fieldset": {
-      borderColor: noBorder ? "none" : "rgba(200, 200, 200, 1)", 
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: noBorder ? "none" : "rgba(255, 149, 0, 1)", 
-    },
-    "& input": {
-      color: "#424242", 
-      backgroundColor: "transparent", 
-    },
-    "& input::placeholder": {
-      color: "#B7B7B7", 
-    },
-    "& input:focus": {
-      backgroundColor: "transparent", 
-    },
-  },
-}));
 
 const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
   const [errorText, setErrorText] = useState({
@@ -77,37 +36,42 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
       price: false,
       quantity: false,
   });
-  const [putProduct] = usePutProductMutation();
+
+  const initialValue = useMemo(
+    () => ({
+      category: {
+        name: "",
+      },
+      parentCategory: { name: "" },
+      productName: "",
+      productCode: "",
+      price: "",
+      quantity: "",
+      productType: "",
+      images: [],
+      productDescription: "",
+      technicalSpecifications: {
+        additionalInfo1: "",
+        additionalInfo2: "",
+        additionalInfo3: "",
+        current: "",
+        dimensions: "",
+        grossWeight: "",
+        netWeight: "",
+        power: "",
+        voltage: "",
+      },
+    }),
+    []
+  );
+  const [putProduct, { error: putProductError, isLoading: isLoadingError, isSuccess: isSuccessPutProduct }] = usePutProductMutation();
   const { modalEdit } = useSelector((state) => state.products);
   const [id, setId] = useState(null);
   const { data, dataError, isLoading } = useGetProductQuery(id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
   const modalRef = useRef(null);
-
-  const [inputValues, setInputValues] = useState({
-    category: {
-      name: "",
-    },
-    parentCategory: { name: "" },
-    productName: "",
-    productCode: "",
-    price: "",
-    quantity: "",
-    productType: "",
-    images: [],
-    productDescription: "",
-    technicalSpecifications: {
-      additionalInfo1: "",
-      additionalInfo2: "",
-      additionalInfo3: "",
-      current: "",
-      dimensions: "",
-      grossWeight: "",
-      netWeight: "",
-      power: "",
-      voltage: "",
-    },
-  });
+  const [inputValues, setInputValues] = useState(initialValue);
 
   // useEffect(() => {
   //   if (open) {
@@ -115,15 +79,23 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
   //   }
   // }, [open]);
 
-  useLayoutEffect(() => {
-    if (open && modalRef.current) {
-      modalRef.current.scrollTop = 0;
+  useEffect(() => {
+    if (Object.keys(inputValues).length === 0) {
+        setInputValues(initialValue);
     }
+}, [inputValues, initialValue]);
+
+  useEffect(() => {
+    setInputValues(initialValue);
   }, [open]);
 
   useEffect(() => {
     setId(modalEdit.productIsEditId);
   }, [modalEdit]);
+
+  useEffect(() => {
+    setInputValues(initialValue);
+  }, []);
 
   useEffect(() => {
    
@@ -134,7 +106,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
 
       setInputValues({
       category: { name: data.category.name },
-      parentCategory: { name: data.category.parentCategory.name },
+      parentCategory: { name: data.category.parentCategory?.name || "" },
       productName: data.title,
       productCode: data.extId,
       price: data.price,
@@ -159,6 +131,8 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
   }, [data]);
 
   const onSigninSubmitProduct = async () => {
+    setisOpenRequestProgressModal(true);
+    close()
     if (isSubmitting) return; 
     setIsSubmitting(true); 
 
@@ -171,7 +145,6 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
         },
         price: inputValues.price,
         active: data.active,
-        extId: inputValues.productCode,
         technicalSpecifications: inputValues.technicalSpecifications,
         type: {
             id: data.type.id,
@@ -182,14 +155,13 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
 
     try {
         await putProduct(productPayload).unwrap(); 
-        alert("Успешно");
         close(); 
     } catch (err) {
         console.log(err);
-        alert(err.data);
     } finally {
         setIsSubmitting(false);
         refetch(); 
+        setInputValues(initialValue)
     }
 };
 
@@ -198,6 +170,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
     if(!Object.values(error).some((value) => value !== false)) {
       onSigninSubmitProduct();
     }
+    setInputValues(initialValue);
   };
 
   const handleAddPhoto = (e, index) => {
@@ -246,12 +219,26 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
   )
   };
 
+  // const handleClose = () => {
+  //   setInputValues(initialValue);
+  //     close()
+  // }
+
+  const handleExitModalRequest = () => {
+    setisOpenRequestProgressModal(false)
+    close()
+  }
+
+  const handleClickButtonRepeat = () => {
+
+  }
+
   return (
-    <Dialog
+    <>
+    { !isOpenRequestProgressModal && <Dialog
       open={open}
       onClose={() => {}}
       maxWidth={false}
-      fullWidth={true}
       scroll="body"
       aria-labelledby="form-dialog-title"
       PaperProps={{
@@ -279,10 +266,10 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
       }}
       sx={{
         "& .MuiDialog-paper": {
-          width: "732px", 
-          borderRadius: "16px", 
-          backgroundColor: "#FFFFFF", 
-          boxShadow: "none", 
+          width: "732px", // Ширина окна
+          borderRadius: "16px", // Скругленные углы
+          backgroundColor: "#FFFFFF", // Прозрачный белый фон
+          boxShadow: "none", // Убрать тени
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -290,8 +277,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           boxSizing: "border-box",
           paddingTop: "13px",
           position: "relative",
-          overflow: "visible",
-          alignContent: "flex-start"
+          overflow: "visible"
         },
       }}
     >
@@ -333,7 +319,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           type="text"
           error={error.parentCategory}
           helperText={errorText.parentCategory}
-          value={inputValues.parentCategory.name}
+          value={inputValues.parentCategory.name || ""}
           onChange={handleInputChange}
         />
         <Typography sx={{ marginTop: "15px" }}>Подкатегория</Typography>
@@ -343,7 +329,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           type="text"
           error={error.category}
           helperText={errorText.category}
-          value={inputValues.category.name}
+          value={inputValues.category.name || ""}
           onChange={handleInputChange}
         />
         <Typography sx={{ marginTop: "15px" }}>Название товара</Typography>
@@ -353,7 +339,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           type="text"
           error={error.productName}
           helperText={errorText.productName}
-          value={inputValues.productName}
+          value={inputValues.productName || ""}
           onChange={handleInputChange}
         />
         <Typography sx={{ marginTop: "15px" }}>Код товара</Typography>
@@ -361,7 +347,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           margin="dense"
           name="productCode"
           type="number"
-          value={inputValues.productCode}
+          value={inputValues.productCode || ""}
           onChange={handleInputChange}
         />
         <Typography sx={{ marginTop: "15px" }}>Цена</Typography>
@@ -380,7 +366,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           type="number"
           error={error.quantity}
           helperText={errorText.quantity}
-          value={inputValues.quantity}
+          value={inputValues.quantity || ""}
           onChange={handleInputChange}
         />
         <Typography sx={{ marginTop: "15px" }}>Вид товара</Typography>
@@ -388,7 +374,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           margin="dense"
           name="productType"
           type="text"
-          value={inputValues.productType}
+          value={inputValues.productType || ""}
           multiline={true}
           minRows={4}
           onChange={handleInputChange}
@@ -470,7 +456,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             margin="dense"
             name="productDescription"
             type="text"
-            value={inputValues.productDescription}
+            value={inputValues.productDescription || ""}
             multiline={true}
             minRows={4}
             onChange={handleInputChange}
@@ -493,7 +479,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="grossWeight"
             type="number"
-            value={inputValues.technicalSpecifications.grossWeight}
+            value={inputValues.technicalSpecifications.grossWeight || ""}
             onChange={handleInputChange}
           />
           <Typography sx={{ marginTop: "15px" }}>Вес нетто</Typography>
@@ -502,7 +488,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="netWeight"
             type="number"
-            value={inputValues.technicalSpecifications.netWeight}
+            value={inputValues.technicalSpecifications.netWeight || ""}
             onChange={handleInputChange}
           />
           <Typography sx={{ marginTop: "15px" }}>
@@ -513,7 +499,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="dimensions"
             type="text"
-            value={inputValues.technicalSpecifications.dimensions}
+            value={inputValues.technicalSpecifications.dimensions || ""}
             onChange={handleInputChange}
           />
           <Typography sx={{ marginTop: "15px" }}>Напряжение, Вт</Typography>
@@ -522,7 +508,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="voltage"
             type="number"
-            value={inputValues.technicalSpecifications.voltage}
+            value={inputValues.technicalSpecifications.voltage || ""}
             onChange={handleInputChange}
           />
           <Typography sx={{ marginTop: "15px" }}>Мощность, Ватт</Typography>
@@ -531,7 +517,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="power"
             type="number"
-            value={inputValues.technicalSpecifications.power}
+            value={inputValues.technicalSpecifications.power || ""}
             onChange={handleInputChange}
           />
           <Typography sx={{ marginTop: "15px" }}>Сила тока, Ампер</Typography>
@@ -540,7 +526,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="current"
             type="number"
-            value={inputValues.technicalSpecifications.current}
+            value={inputValues.technicalSpecifications.current || ""}
             onChange={handleInputChange}
           />
           <Typography sx={{ marginTop: "15px" }}>
@@ -551,7 +537,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="additionalInfo1"
             type="text"
-            value={inputValues.technicalSpecifications.additionalInfo1}
+            value={inputValues.technicalSpecifications.additionalInfo1 || ""}
             multiline={true}
             minRows={4}
             onChange={handleInputChange}
@@ -570,7 +556,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             name="technicalSpecifications"
             id="additionalInfo2"
             type="text"
-            value={inputValues.technicalSpecifications.additionalInfo2}
+            value={inputValues.technicalSpecifications.additionalInfo2 || ""}
             multiline={true}
             minRows={4}
             onChange={handleInputChange}
@@ -589,7 +575,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
             id="additionalInfo3"
             name="technicalSpecifications"
             type="text"
-            value={inputValues.technicalSpecifications.additionalInfo3}
+            value={inputValues.technicalSpecifications.additionalInfo3 || ""}
             multiline={true}
             minRows={4}
             onChange={handleInputChange}
@@ -678,7 +664,16 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
           <Typography variant="text16Bold">Сохранить</Typography>
         </Button>
       </DialogActions>
-    </Dialog>
+    </Dialog>}
+    <RequestProgressModal
+    handleClickButton={handleClickButtonRepeat}
+    open={isOpenRequestProgressModal}
+    close={handleExitModalRequest}
+    error={putProductError? putProductError: false}
+    isLoading={isLoadingError}
+    isSuccess={isSuccessPutProduct && !isLoadingError}
+  ></RequestProgressModal>
+    </>
   );
 };
 

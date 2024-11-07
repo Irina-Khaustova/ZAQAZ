@@ -16,11 +16,12 @@ import {
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
 import { usePostProductMutation } from "../../../api/Api";
 import {ReactComponent as MyIconFile} from "../../../image/file.svg";
+import RequestProgressModal from "../../../components/RequestProgressModal";
 
 const CustomTextField = styled(
   ({ autoFocus = true, fullWidth = true, autoComplete = "off", noBorder = false, ...props }) => (
     <TextField
-      autoFocus={autoFocus}
+     
       fullWidth={fullWidth}
       autoComplete={autoComplete}
       {...props}
@@ -53,10 +54,11 @@ const CustomTextField = styled(
   },
 }));
 
-const ModalAdd = ({ open, close, modalCategory, sendRequest }) => {
+const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   const [errorText, setErrorText] = useState("");
   const [error, setError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
   const [inputValues, setInputValues] = useState({
     category: {
       name: "",
@@ -82,7 +84,11 @@ const ModalAdd = ({ open, close, modalCategory, sendRequest }) => {
     },
   });
 
-  const [postProduct] = usePostProductMutation();
+  // useEffect(() => {
+  //   setisOpenRequestProgressModal(false)
+  // }, [])
+
+  const [postProduct, { error: putProductError, isLoading: isLoadingError, isSuccess: isSuccessPostProduct }] = usePostProductMutation();
 
   const onSigninSubmitProduct = async () => {
     if (isSubmitting) return; 
@@ -93,12 +99,12 @@ const ModalAdd = ({ open, close, modalCategory, sendRequest }) => {
       "description": inputValues.productDescription,
       "category": {
         // "id": data.category.id,
-        "name": inputValues.category,
+        "id": 196,
         // "isHidden": data.category.isHidden,
         // "store": data.category.store,
         // "extId": data.category.extId,
         // "color": data.category.color,
-        "parentCategory": inputValues.parentCategory,
+        // "parentCategory": inputValues.parentCategory.name,
         // "images": data.category.images
       },
       "price": inputValues.price,
@@ -107,25 +113,30 @@ const ModalAdd = ({ open, close, modalCategory, sendRequest }) => {
       // "measureUnit": data.measureUnit,
       // "tags": data.tags,
       // "sku": data.sku,
-      "images": inputValues.images,
+      "images":  [],
       "technicalSpecifications": inputValues.technicalSpecifications,
       // "type": {
       //   "id": data.type.id,
       //   "name": inputValues.productType,
       // },
-      "quantity": inputValues.quantity
+      "quantity": inputValues.quantity,
+      "type": {
+        id: 3,
+        name: "Type of item test"
+      }
   }
   try {
-    postProduct(productPayload).unwrap();
-    close();
+    setisOpenRequestProgressModal(true)
+    close()
+    await postProduct(productPayload).unwrap();
     alert("Успешно");
-    close();
   } catch (err) {
     console.log(err);
     alert(err.data);
   } finally {
-    setIsSubmitting(false)
-    sendRequest()
+    setIsSubmitting(false);
+    refetch()
+    close()
   }
 };
 
@@ -163,6 +174,15 @@ const handleInputChange = (e) => {
     }
   };
 
+  const handleClickButtonRepeat = () => {
+    close();
+  }
+
+  const handleExitModalRequest = () => {
+    setisOpenRequestProgressModal(false)
+    close()
+  }
+
   console.log();
 
   useEffect(() => {
@@ -191,7 +211,8 @@ const handleInputChange = (e) => {
   };
 
   return (
-    <Dialog
+    <>
+    { !isOpenRequestProgressModal && <Dialog
       open={open}
       onClose={() => {}}
       maxWidth={false} 
@@ -587,7 +608,17 @@ const handleInputChange = (e) => {
           <Typography variant="text16Bold">Сохранить</Typography>
         </Button>
       </DialogActions>
-    </Dialog>
+      
+    </Dialog>}
+    <RequestProgressModal
+            handleClickButton={handleClickButtonRepeat}
+            open={isOpenRequestProgressModal}
+            close={handleExitModalRequest}
+            error={putProductError? putProductError: false}
+            isLoading={isLoadingError}
+            isSuccess={isSuccessPostProduct && !isLoadingError}
+          ></RequestProgressModal>
+    </>
   );
 };
 

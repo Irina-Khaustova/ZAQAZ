@@ -55,7 +55,7 @@ function Order() {
       onStatusChange();
     }
     setIsUpdateStatus(false);
-  }, [statusProduct]);
+  }, [statusProduct, isUpdateStatus]);
 
   const onStatusChange = async () => {
     try {

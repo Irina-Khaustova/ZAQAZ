@@ -62,7 +62,7 @@ function DateInput({ name, onChange, value }) {
         onChange={handleDateChange}
         disableOpenPicker={false}
         desktopModeMediaQuery="@media (min-width: 0px)"
-        renderInput={(params) => <TextField {...params} />}
+        TextFieldComponent={TextField}
       />
     </LocalizationProvider>
   );

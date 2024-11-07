@@ -5,7 +5,8 @@ export const Api = createApi({
     baseUrl: "/api",
     // добавляем заголовок с токеном к каждому запросу
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.authToken;
+      const token = localStorage.getItem("key")
+      // const token = getState().auth.authToken;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
         headers.set("Content-Type", `application/json`);
@@ -51,7 +52,7 @@ export const Api = createApi({
         return {
           url: `v1/store/category/item`,
           method: "PUT",
-          body,
+          body: JSON.stringify(body)
         };
       },
     }),
@@ -76,6 +77,16 @@ export const Api = createApi({
         };
       },
     }),
+    postCategoryImage: builder.mutation({
+      query(data) {
+        const {image, id} = data;
+        return {
+          url: `v1/store/category/${id}/image`,
+          method: "PATCH",
+          body: image
+        };
+      },
+    }),
     
     getOrders: builder.query({
       query: () => `v1/order/list`,
@@ -86,23 +97,32 @@ export const Api = createApi({
     getOrderswithFiler: builder.query({
       query: (request) => `v1/order/${request}`,
     }),
-    getCategory: builder.query({
-      query: (url) => `v1/store/category?${url}`,
+    getCategoryWithSubcategory: builder.query({
+      query: ({id, url}) => `v1/store/${id}/category/withSubcategory?${url}`,
     }),
     getSubCategoryById: builder.query({
-      query: (id) => `v1/store/category/${id}/allSubcategory?page=1&size=1`,
+      query: ({id, url}) => `v1/store/category/${id}/allSubcategory?${url}`,
     }),
     getProductsswithFiler: builder.query({
       query: ({request}) => `v1/store/category/item/${request}`,
-      keepUnusedDataFor: 0,
     }),
     getProduct: builder.query({
       query: (id) => `v1/store/category/item/${id}`,
     }),
-    deletePost: builder.mutation({
+    deleteProduct: builder.mutation({
       query(id) {
         return {
-          url: `v1/orderItem/${id}`,
+          url: `v1/store/category/item/${id}`,
+          method: 'DELETE',
+        }
+      },
+      // Invalidates all queries that subscribe to this Post `id` only.
+      invalidatesTags: (result, error, id) => [{ type: 'Posts', id }],
+    }),
+    deleteCategory: builder.mutation({
+      query(id) {
+        return {
+          url: `v1/store/category/${id}`,
           method: 'DELETE',
         }
       },
@@ -119,12 +139,13 @@ export const {
   usePostCategoryMutation,
   useGetOrderQuery,
   useGetOrderswithFilerQuery,
-  useGetCategoryQuery,
+  useGetCategoryWithSubcategoryQuery,
   useGetSubCategoryByIdQuery,
   useGetProductsswithFilerQuery,
   useGetProductQuery,
   usePutProductMutation,
   usePutStatusProductMutation,
-  useDeletePostMutation,
-  usePostProductMutation
+  useDeleteProductMutation,
+  usePostProductMutation,
+  useDeleteCategoryMutation
 } = Api;

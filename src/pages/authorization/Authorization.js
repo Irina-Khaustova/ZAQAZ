@@ -38,6 +38,7 @@ function Authorization() {
         cellphone: phoneValue.replace(/[^0-9]/g, ''),
       }).unwrap();
       dispatch(putAuth(userData.key));
+      localStorage.setItem('key', userData.key);
       navigate("/category");
     } catch (err) {
       // setErrorText(err.data);
@@ -109,6 +110,7 @@ function Authorization() {
     setIsShowPin(false);
     setIsErrorAuth(false);
     setPhoneValue("");
+    setCode(["", "", "", ""])
   };
 
   return (

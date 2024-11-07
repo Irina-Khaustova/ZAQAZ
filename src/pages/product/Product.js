@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
 import SideBar from "../../components/SideBar.js";
-import { useGetProductQuery, useDeletePostMutation } from "../../api/Api.js";
+import { useGetProductQuery, useDeleteProductMutation } from "../../api/Api.js";
 import { useNavigate, useParams } from "react-router-dom";
 import ButtonBack from "../../components/ButtonBack.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as MyIconEdit } from "../../image/edit-black.svg";
 import { ReactComponent as MyIconTrash } from "../../image/icon-trash.svg";
 import { putIsOpenModalEdit } from "../products/ProductsSlice.js";
+import ModalEditProduct from "../../components/ModalEditProduct.js";
+import ModalDelete from "../../components/ModalDelete.js";
 
 function Product() {
   const [product, setProduct] = useState(0);
   const [images, setImages] = useState([]);
+  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const { modalEdit } = useSelector((state) => state.products);
 
   const { id } = useParams();
 
   // параметры для фильтрации
   // eslint-disable-next-line
-  const { data, error, isLoading } = useGetProductQuery(id);
+  const { data, error, isLoading, refetch } = useGetProductQuery(id);
   // eslint-disable-next-line
-  const [deletePost, { isLoading: isDeleting }] = useDeletePostMutation()
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -30,11 +34,31 @@ function Product() {
   }, [data]);
 
   const onhandleClickEdit = () => {
-    dispatch(putIsOpenModalEdit(true));
+    dispatch(putIsOpenModalEdit({ isOpen: true, id: id }));
+  };
+
+  const handleToggleModalEdit = () => {
+    dispatch(putIsOpenModalEdit({ isOpen: false, id: null }));
+  };
+
+  const handleToggleModalDelete = () => {
+    setIsOpenModalDelete(false);
   };
 
   const onhandleClickDelete = () => {
- deletePost(id).then(() => navigate('/products'))}
+    setIsOpenModalDelete(true)
+  };
+
+  const onhandleDelete = () => {
+    deleteProduct(id)
+    .then(() => console.log("удалено"))
+    refetch()
+    .then(() => navigate("/products"));
+  }
+
+  const handleRefetch = () => {
+    refetch();
+  }
 
   return (
     <>
@@ -180,6 +204,7 @@ function Product() {
                       {images &&
                         images.map((image) => (
                           <Box
+                            key={image.id}
                             sx={{
                               width: "80px",
                               height: "80px",
@@ -271,6 +296,15 @@ function Product() {
                           Редактировать товар
                         </Typography>
                       </Button>
+
+                      <ModalEditProduct
+                        open={modalEdit.isOpenModalEdit}
+                        close={handleToggleModalEdit}
+                        refetch={handleRefetch}
+                        onhandleClickDelete={onhandleClickDelete}
+                        name="edit"
+                        id="id"
+                      ></ModalEditProduct>
                     </Box>
                     <Box
                       sx={{
@@ -312,6 +346,14 @@ function Product() {
                           Удалить товар
                         </Typography>
                       </Button>
+                      <ModalDelete
+                        open={isOpenModalDelete}
+                        close={handleToggleModalDelete}
+                        refetch={() => {}}
+                        onhandleClickDelete={() => onhandleDelete(id)}
+                        name="продукт"
+                        id={id}
+                      ></ModalDelete>
                     </Box>
                   </Box>
                 </Box>

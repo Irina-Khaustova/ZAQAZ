@@ -1,25 +1,36 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
 import SideBar from "../../components/SideBar.js";
 import { ReactComponent as MyIconSearch } from "../../image/search.svg";
 import Input from "../../components/Input.js";
 import CategoryItem from "./components/CategoryItem.js";
 import ModalEdit from "./components/ModalEdit.js";
-import { useGetCategoryQuery } from "../../api/Api.js";
+import { useGetCategoryWithSubcategoryQuery } from "../../api/Api.js";
 import ModalAdd from "./components/ModalAdd.js";
 import { useDispatch } from "react-redux";
 import { putcategory } from "./categorySlice.js";
+import { useDeleteCategoryMutation } from "../../api/Api.js";
+import RequestProgressModal from "../../components/RequestProgressModal.js";
 
 function Category() {
   const [isModalAdd, setIsModalAdd] = useState(false);
   const [isModalEdit, setIsModalEdit] = useState(false);
   const [dataCategory, setDataCategory] = useState([]);
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
+  const [isOpenRequestProgressModal, setisOpenRequestProgressModal] =
+    useState(false);
 
+  const timeoutRef = useRef(null);
   const dispatch = useDispatch();
 
-  const [searchValue, setSearchValue] = useState();
-  const { data, error, isLoading } = useGetCategoryQuery(url);
+  const [searchValue, setSearchValue] = useState("");
+  // const { data, error, isLoading } = useGetCategoryQuery(url);
+  const { data, error, isLoading, refetch } =
+    useGetCategoryWithSubcategoryQuery({ id: 26, url: url });
+  const [
+    deleteCategory,
+    { isLoading: isDeleting, error: deleteError, isSuccess: isSuccessDelete },
+  ] = useDeleteCategoryMutation();
 
   // при загрузке страницы устанавливаем флаг для запроса списка категорий с сервера
   useEffect(() => {
@@ -28,32 +39,64 @@ function Category() {
 
   useEffect(() => {
     if (data) {
-    setDataCategory(data.content);
+      if (searchValue === "") {
+        setDataCategory(data.content);
+      } else
+        setDataCategory(
+          data.content.filter(
+            (el) =>
+              el.name &&
+              el.name.toLowerCase().includes(searchValue.toLowerCase())
+          )
+        );
     }
-  }, [data]);
+  }, [data, searchValue]);
 
   useState(() => {
-    setUrl('page=1&size=6')
-  }, [])
+    setUrl("page=0&size=500");
+  }, []);
 
   // обработчик полей фильтра
   const onSearchChange = (e) => {
     setSearchValue(e.target.value);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      // const newUrl = `search?=${value}&orderNum=${id}`;
+      // setUrl(newUrl);
+    }, 300);
   };
   const handleToggleModalAdd = (e) => {
     setIsModalAdd((prev) => !prev);
   };
 
-  const handlePutCategory = (id) => {
-    let newId = +id;
-    let filter = dataCategory?.filter((el) => el.id === newId);
-    console.log(filter)
-    dispatch(putcategory(filter));
+  const handlePutCategory = (category) => {
+    // let newId = +id;
+    // let filter = dataCategory?.filter((el) => el.id === newId);
+    // console.log(filter)
+    dispatch(putcategory(category));
   };
 
   const handleToggleModalEdit = useCallback((e) => {
     setIsModalEdit((prev) => !prev);
   }, []);
+
+  const handleRefetch = () => {
+    refetch();
+  };
+
+  const handleExitModalRequest = () => {
+    setisOpenRequestProgressModal(false)
+  }
+
+  const handleClickButtonRepeat = () => {
+
+  }
+
+  const handleDeleteCategory = (id) => {
+    deleteCategory(id)
+  };
 
   return (
     <>
@@ -135,6 +178,7 @@ function Category() {
                     close={handleToggleModalAdd}
                     open={isModalAdd}
                     modalCategory="Создание категории"
+                    refetch={handleRefetch}
                   ></ModalAdd>
                 </Box>
                 <Input
@@ -175,9 +219,10 @@ function Category() {
                     id={el.id}
                     images={el.images}
                     categoryName={el.name}
-                    subcategory={el.subcategory}
+                    subcategory={el.subcategories}
                     onModalToggle={handleToggleModalEdit}
-                    putCategory={handlePutCategory}
+                    putCategory={() => handlePutCategory(el)}
+                    deleteCategory={() => handleDeleteCategory(el.id)}
                     // isModalEdit={isModalEdit}
                   />
                 ))
@@ -187,12 +232,21 @@ function Category() {
                   close={handleToggleModalEdit}
                   open={isModalEdit}
                   name="edit"
+                  refetch={handleRefetch}
                   // value={categoryName}
                 />
               )}
             </Box>
           </Box>
         </Box>
+        <RequestProgressModal
+          handleClickButton={handleClickButtonRepeat}
+          open={isOpenRequestProgressModal}
+          close={handleExitModalRequest}
+          error={deleteError ? deleteError : false}
+          isLoading={isDeleting}
+          isSuccess={isSuccessDelete && !deleteError}
+        ></RequestProgressModal>
       </Container>
     </>
   );

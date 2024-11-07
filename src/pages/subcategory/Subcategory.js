@@ -15,79 +15,14 @@ function SubCategory() {
   const [isModalAdd, setIsModalAdd] = useState(false);
   const [isModalEdit, setIsModalEdit] = useState(false);
   const [subcategory, setSubcategory] = useState('');
+  const [url, setUrl] = useState("");
 
   const {id} = useParams();
   
-// eslint-disable-next-line
-  const dataset = [
-    {
-      id: 11,
-      name: "Мобильные телефоны",
-      isHidden: false,
-      subcategory: ["Телевизоры",
-"Кронштейны для тв", 
-"Стойки для аппаратуры",
-"Домашние кинотеатры",
-"кресла для кинотеатров",
-"..."],
-      store: {
-        id: 11,
-        title: "Тест магазин для Марата",
-        description: "Тест магазин для Марата",
-        logo: "https://images.freeimages.com/fic/images/icons/447/apple_tv/256/apple_logo.png",
-        largeLogo:
-          "https://media.idownloadblog.com/wp-content/uploads/2019/03/Logo-desktop-Apple-Credit-Card-wallpaper-AR72014-v3.png",
-        color: "#330b8a",
-        extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
-        latitude: null,
-        longitude: 76.9286,
-        baseUrl: "https://celinefloral.posiflora.com/api",
-        deliveryPrice: 15000,
-        city: "Алматы",
-        roles: [],
-      },
-      extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
-      color: "b9f6ca",
-      parentCategory: null,
-      images: [],
-    },
-    {
-      id: 10,
-      name: "Сетевое оборудование",
-      isHidden: false,
-      subcategory: ["Телевизоры",
-        "Кронштейны для тв", 
-        "Стойки для аппаратуры",
-        "Домашние кинотеатры",
-        "кресла для кинотеатров",
-        "..."],
-      store: {
-        id: 11,
-        title: "Тест магазин для Марата",
-        description: "Тест магазин для Марата",
-        logo: "https://images.freeimages.com/fic/images/icons/447/apple_tv/256/apple_logo.png",
-        largeLogo:
-          "https://media.idownloadblog.com/wp-content/uploads/2019/03/Logo-desktop-Apple-Credit-Card-wallpaper-AR72014-v3.png",
-        color: "#330b8a",
-        extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
-        latitude: null,
-        longitude: 76.9286,
-        baseUrl: "https://celinefloral.posiflora.com/api",
-        deliveryPrice: 15000,
-        city: "Алматы",
-        roles: [],
-      },
-      extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
-      color: "b9f6ca",
-      parentCategory: null,
-      images: [],
-    },
-  ];
-
   // параметры для фильтрации
   const [searchValue, setSearchValue] = useState();
 
-  const { data, error, isLoading} = useGetSubCategoryByIdQuery(id);
+  const { data, error, isLoading} = useGetSubCategoryByIdQuery({id: id, url: url});
   const { category } = useSelector((state) => state.category);
 
   // const navigate = useNavigate();
@@ -95,22 +30,13 @@ function SubCategory() {
   // при загрузке страницы устанавливаем флаг для запроса списка категорий с сервера
   useEffect(() => {
     console.log(category)
-    setIdValue(category?.id);
+    setSubcategory(category? category: null);
   }, [category]);
 
   useEffect(() => {
     
   }, []);
  
-
-  useEffect(() => {
-    
-    console.log()
-
-    setSubcategory(category !==null? category[0].name: '')
-   
-  }, [category]);
-
 
   // обработчик полей фильтра
   const onSearchChange = (e) => {
@@ -228,10 +154,12 @@ console.log(data)
             </Box>
             <Box
               sx={{
-                backgroundColor: "rgba(255, 255, 255, 1)",
                 marginBottom: "32px",
-                padding: "0 36px 0 24px",
+                backgroundColor: "rgba(246, 248, 249, 1)",
                 border: "1px solid rgba(255, 255, 255, 1)",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "flex-start",
               }}
             >
               {error && (

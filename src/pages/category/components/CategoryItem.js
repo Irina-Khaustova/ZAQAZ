@@ -103,7 +103,7 @@ function CategoryItem({
               variant="text16Light"
               sx={{ lineHeight: "24px", color: "#646261" }}
             >
-              {el}
+              {el.name}
             </Typography>
           ))}
       </Box>

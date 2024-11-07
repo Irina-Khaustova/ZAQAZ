@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Container, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SideBar from "../../components/SideBar.js";
 import { ReactComponent as MyIconSearch } from "../../image/search.svg";
@@ -14,30 +9,29 @@ import CustomButton from "../../components/CustomButton.js";
 import { useGetProductsswithFilerQuery } from "../../api/Api.js";
 import Pagination from "../../components/Pagination.js";
 import ModalAdd from "./components/ModalAdd.js";
-import {putIsOpenModalEdit} from "../products/ProductsSlice.js";
+import { putIsOpenModalEdit } from "../products/ProductsSlice.js";
 import ModalEditProduct from "../../components/ModalEditProduct.js";
 import InputSelect from "../../components/InputSelect.js";
 import ProductItem from "./components/ProductItem.js";
 import { useDispatch, useSelector } from "react-redux";
-import { putUrl } from "../products/ProductsSlice.js";
 
 function Products() {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [isCheckSortDate, setIsCheckSortDate] = useState(false);
   const [isCheckSortName, setIsCheckSortName] = useState(false);
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState("filter?");
   const [isModalAdd, setIsModalAdd] = useState(false);
-  const [trigger, setTrigger] = useState(false)
-  const [dataDraw, setDataDraw] = useState('')
- 
-
+  const [dataDraw, setDataDraw] = useState("");
+  
   //   const dispatch = useDispatch();
- 
-  const { data, error, isLoading, refetch } = useGetProductsswithFilerQuery({ request: url, trigger });
+
+  const { data, error, isLoading, refetch } = useGetProductsswithFilerQuery({
+    request: url,
+  });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {modalEdit} = useSelector((state) => state.products)
+  const { modalEdit } = useSelector((state) => state.products);
   // параметры для фильтрации
   const [filter, setFilter] = useState({
     minPrice: "",
@@ -50,47 +44,24 @@ function Products() {
     search: "",
   });
 
-  // при загрузке страницы устанавливаем флаг для запроса списка категорий с сервера
   useEffect(() => {
-    setDataDraw(data)
-    setUrl("filter?")
-    dispatch(putUrl(url))
-  }, [data,dispatch,url]);
+    setTotalPages(data ? data.page.totalPages : null);
+    setCurrentPage(data?.page.number);
+    setDataDraw(data);
+    console.log(data?.page.totalPages);
+  }, [data]);
 
-  useEffect(() => {
-    dispatch(putUrl(url))
-    if(!modalEdit.isOpenModalEdit) {
-      // refetch()
-    }
-    console.log(88888, url)
-    // eslint-disable-next-line
-  }, [url, filter, modalEdit]);
-
- 
- 
-  useEffect(() => {
-    setTotalPages(data? data.page.totalPages : null);
-    setCurrentPage(data?.page.number)
-    setDataDraw(data)
-    console.log(data?.page.totalPages)
-    }, [data, trigger]);
-    
-const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
 
     if (name === "sortbydate") {
-        setIsCheckSortDate(checked);
-        setIsCheckSortName(false);
+      setIsCheckSortDate(checked);
+      setIsCheckSortName(false);
     } else if (name === "sortbyname") {
-        setIsCheckSortName(checked);
-        setIsCheckSortDate(false);
+      setIsCheckSortName(checked);
+      setIsCheckSortDate(false);
     }
   };
-
-  // const handleCloseModalSave = () => {
-  //   dispatch(putIsOpenModalEdit({isOpen: false, id: null}))
-  //   setTrigger(true)
-  // }
 
   // обработчик полей фильтра
   const onFilterChange = (e) => {
@@ -113,25 +84,7 @@ const handleCheckboxChange = (event) => {
   };
 
   const onSubmit = () => {
-    setTrigger((prev) => !prev)
-    onGetProduct();
-  }
-
-  const onhandleClickDelete = () => {
-
-  }
-
-  const handleRefetch = () => {
-    // window.location.reload();
-
-    refetch()
-    console.log('reload')
-
-  };
-
-  // обработчик клика кнопки Выполнить -- формирование url для запроса
-  const onGetProduct = () => {
-    console.log(22, filter)
+    console.log(22, filter);
     let nUrl = `filter?`
       // .concat(currentPage ? `page=${currentPage}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
@@ -139,25 +92,33 @@ const handleCheckboxChange = (event) => {
       .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
       .concat(filter.minQuantity ? `&minQuantity=${filter.minQuantity}` : "")
       .concat(filter.maxQuantity ? `&maxQuantity=${filter.maxQuantity}` : "")
+      .concat(isCheckSortDate ? "&sortBy=date" : "")
+      .concat(isCheckSortName ? "&sortBy=name" : "")
       .concat(filter.search ? `&search=${filter.search}` : "");
     setUrl(nUrl);
-    setTrigger(false);
-    dispatch(putUrl(url))
-    console.log(111, nUrl)
+  };
+
+  const onhandleClickDelete = () => {};
+
+  const handleRefetch = () => {
+    // window.location.reload();
+    refetch();
+
+    console.log("reload");
   };
 
   // очищаем все фильтры
   const handleClear = () => {
     setFilter({
-        minPrice: "",
-        maxPrice: "",
-        minQuantity: "",
-        maxQuantity: "",
-        marketplace: "",
-        sortDateAdd: "По дате добавления",
-        sortName: "",
-        search: "",
-        size: 6,
+      minPrice: "",
+      maxPrice: "",
+      minQuantity: "",
+      maxQuantity: "",
+      marketplace: "",
+      sortDateAdd: "По дате добавления",
+      sortName: "",
+      search: "",
+      size: 6,
     });
   };
 
@@ -166,27 +127,27 @@ const handleCheckboxChange = (event) => {
     setCurrentPage(page);
   };
 
-    // обработчик клика на строку товара
-    const handleClickItem = (id) => {
-      navigate(`/product/${id}`);
-    };
+  // обработчик клика на строку товара
+  const handleClickItem = (id) => {
+    navigate(`/product/${id}`);
+  };
 
   const handleToggleModalAdd = useCallback((e) => {
-    console.log(256)
+    console.log(256);
     // handlePutCategory(e.target.parentNode.id)
     setIsModalAdd((prev) => !prev);
   }, []);
   const handleToggleModalEdit = (e) => {
-    console.log(256)
+    console.log(256);
     // handlePutCategory(e.target.parentNode.id)
-    dispatch(putIsOpenModalEdit({isOpen: false, id: null}))
+    dispatch(putIsOpenModalEdit({ isOpen: false, id: null }));
   };
 
   const isOpenModalEdit = (id) => {
-    console.log('hi')
-    dispatch(putIsOpenModalEdit({isOpen: true, id: id}))
-  }
-  
+    console.log("hi");
+    dispatch(putIsOpenModalEdit({ isOpen: true, id: id }));
+  };
+
   return (
     <>
       <Container
@@ -217,7 +178,7 @@ const handleCheckboxChange = (event) => {
                 backgroundColor: "rgba(255, 255, 255, 1)",
                 marginBottom: "22px",
                 border: "1px solid rgba(255, 255, 255, 1)",
-                borderRadius: "16px 16px 0 0", 
+                borderRadius: "16px 16px 0 0",
               }}
             >
               <Box
@@ -235,7 +196,7 @@ const handleCheckboxChange = (event) => {
 
                     marginBottom: "18px",
                     padding: "24px",
-                    paddingBottom: "10px"
+                    paddingBottom: "10px",
                   }}
                 >
                   <Box
@@ -245,7 +206,6 @@ const handleCheckboxChange = (event) => {
                       justifyContent: "space-between",
                       height: "40px",
                       marginBottom: "19px",
-                      
                     }}
                   >
                     <Box>
@@ -261,7 +221,7 @@ const handleCheckboxChange = (event) => {
                       </Typography>
                     </Box>
                     <Button
-                        onClick={handleToggleModalAdd}
+                      onClick={handleToggleModalAdd}
                       sx={{
                         width: "240px",
                         height: "40px",
@@ -278,10 +238,11 @@ const handleCheckboxChange = (event) => {
                       + Добавить товар
                     </Button>
                     <ModalAdd
-                    close={handleToggleModalAdd}
-                    open={isModalAdd}
-                    modalCategory="Создание товара"
-                  ></ModalAdd>
+                      close={handleToggleModalAdd}
+                      open={isModalAdd}
+                      modalCategory="Создание товара"
+                      refetch={handleRefetch}
+                    ></ModalAdd>
                   </Box>
                   <Input
                     size="100%"
@@ -299,12 +260,11 @@ const handleCheckboxChange = (event) => {
 
                 <Box
                   sx={{
-                    
                     borderBottom: "1px solid #EBEBEB",
                     borderTop: "1px solid #EBEBEB",
                     display: "flex",
                     flexDirection: "column",
-                    padding: "0 24px 0 24px"
+                    padding: "0 24px 0 24px",
                   }}
                 >
                   <Box
@@ -376,7 +336,7 @@ const handleCheckboxChange = (event) => {
                         flexDirection: "row",
                         alignItems: "center",
                         marginBottom: "4px",
-                        height: "59px"
+                        height: "59px",
                       }}
                     >
                       <Box>
@@ -425,25 +385,25 @@ const handleCheckboxChange = (event) => {
                     justifyContent: "flex-end",
                     paddingRight: "24px",
                     paddingTop: "15px",
-                    marginBottom: "10px"
+                    marginBottom: "10px",
                   }}
                 >
                   <Button
                     variant="contained"
                     onClick={handleClear}
                     sx={{
-                      backgroundColor: "transparent", 
-                      color: "inherit", 
+                      backgroundColor: "transparent",
+                      color: "inherit",
                       fontSize: "16px",
                       fontWeight: "600",
                       textTransform: "capitalize",
-                      boxShadow: "none", 
+                      boxShadow: "none",
                       "&:hover": {
-                        backgroundColor: "transparent", 
-                        color: "inherit", 
-                        boxShadow: "none", 
+                        backgroundColor: "transparent",
+                        color: "inherit",
+                        boxShadow: "none",
                       },
-                      border: "none", 
+                      border: "none",
                     }}
                   >
                     Сбросить фильтры
@@ -467,46 +427,47 @@ const handleCheckboxChange = (event) => {
                 flexWrap: "wrap",
                 justifyContent: "flex-start",
               }}
-            
-            >{error && (
+            >
+              {error && (
                 <Typography sx={{ marginTop: "20px" }}>
                   Ошибка загрузки
                 </Typography>
               )}
               {isLoading ? (
                 <Typography>Loading...</Typography>
-              ) : dataDraw? (
+              ) : dataDraw ? (
                 dataDraw?.content.map((el) => (
                   <ProductItem
-                  key={el.id}
-                  id={el.id}
-                  images={el.images}р
-                  categoryName={el.category.name}
-                  quantity={el.quantity}
-                  title={el.title}
-                  onClick={() => handleClickItem(el.id)}
-                  isOpenModal={() => isOpenModalEdit(el.id)}
-                  
+                    key={el.id}
+                    id={el.id}
+                    images={el.images}
+                    р
+                    categoryName={el.category.name}
+                    quantity={el.quantity}
+                    title={el.title}
+                    onClick={() => handleClickItem(el.id)}
+                    isOpenModal={() => isOpenModalEdit(el.id)}
                   />
                 ))
-              ): null}</Box>
+              ) : null}
+            </Box>
           </Box>
           <Box>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              ></Pagination>
-            </Box>
-             <ModalEditProduct
-          open={modalEdit.isOpenModalEdit}
-          close={handleToggleModalEdit}
-          sendRequest={onSubmit}
-          refetch={handleRefetch}
-          onhandleClickDelete={onhandleClickDelete}
-          name="edit"
-          id="id"
-        ></ModalEditProduct>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            ></Pagination>
+          </Box>
+          <ModalEditProduct
+            open={modalEdit.isOpenModalEdit}
+            close={handleToggleModalEdit}
+            sendRequest={onSubmit}
+            refetch={handleRefetch}
+            onhandleClickDelete={onhandleClickDelete}
+            name="edit"
+            id="id"
+          ></ModalEditProduct>
         </Box>
       </Container>
     </>

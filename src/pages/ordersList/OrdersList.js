@@ -25,7 +25,7 @@ function OrdersList() {
     marketplace: "",
     startDate: "",
     endDate: "",
-    supplierName: "",
+    searchWord: "",
     orderNum: "",
     size: 6,
   });
@@ -71,8 +71,8 @@ function OrdersList() {
       .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
       .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
       .concat(filter.startDate ? `&startDate=${filter.startDate}` : "")
-      .concat(filter.supplierName ? `&supplierName=${filter.supplierName}` : "")
-      .concat(filter.orderName ? `&orderName=${filter.orderName}` : "")
+      .concat(filter.searchWord ? `&searchWord=${filter.searchWord}` : "")
+      .concat(filter.orderNum ? `&orderName=${filter.orderNum}` : "")
       .concat(filter.endDate ? `&endDate=${filter.endDate}` : "");
     setUrl(newUrl);
   };
@@ -156,8 +156,8 @@ function OrdersList() {
                   handleChange={onFilterChange}
                   backgroundColor="#F6F8F9"
                   type="text"
-                  name="supplierName"
-                  value={filter.supplierName}
+                  name="searchWord"
+                  value={filter.searchWord || ""}
                 ></Input>
               </Box>
               <Box
@@ -190,7 +190,7 @@ function OrdersList() {
                       handleChange={onFilterChange}
                       type="number"
                       name="minPrice"
-                      value={filter.minPrice}
+                      value={filter.minPrice || ""}
                     ></Input>
                   </Box>
                   <Box sx={{ marginLeft: "8px" }}>
@@ -201,7 +201,7 @@ function OrdersList() {
                       handleChange={onFilterChange}
                       type="number"
                       name="maxPrice"
-                      value={filter.maxPrice}
+                      value={filter.maxPrice || ""}
                     ></Input>
                   </Box>
                 </Box>
@@ -225,7 +225,7 @@ function OrdersList() {
                       handleChange={onFilterChange}
                       menuItems={[1, 2, 3]}
                       name="marketplace"
-                      value={filter.marketplace}
+                      value={filter.marketplace || ""}
                     ></InputSelect>
                   </Box>
                 </Box>
@@ -246,7 +246,7 @@ function OrdersList() {
                       size="152px"
                       onChange={onFilterChange}
                       name="endDate"
-                      value={filter.endDate}
+                      value={filter.endDate || ""}
                     ></DateInput>
                   </Box>
                 </Box>
