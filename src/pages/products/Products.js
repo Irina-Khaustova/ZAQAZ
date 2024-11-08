@@ -20,7 +20,7 @@ function Products() {
   const [currentPage, setCurrentPage] = useState(0);
   const [isCheckSortDate, setIsCheckSortDate] = useState(false);
   const [isCheckSortName, setIsCheckSortName] = useState(false);
-  const [url, setUrl] = useState("filter?");
+  const [url, setUrl] = useState("filter?size=8");
   const [isModalAdd, setIsModalAdd] = useState(false);
   const [dataDraw, setDataDraw] = useState("");
   
@@ -50,6 +50,10 @@ function Products() {
     setDataDraw(data);
     console.log(data?.page.totalPages);
   }, [data]);
+
+  useEffect(() => {
+    onSubmit()
+  },[currentPage])
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
@@ -85,8 +89,8 @@ function Products() {
 
   const onSubmit = () => {
     console.log(22, filter);
-    let nUrl = `filter?`
-      // .concat(currentPage ? `page=${currentPage}` : "")
+    let nUrl = `filter?size=500`
+      // .concat(currentPage ? `&page=${currentPage}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
       .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
       .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
@@ -169,7 +173,7 @@ function Products() {
             sx={{
               backgroundColor: "rgba(246, 248, 249, 1)",
               padding: "37px",
-              height: "100%",
+              // height: "100%",
               marginTop: "64px",
             }}
           >
@@ -442,7 +446,7 @@ function Products() {
                     id={el.id}
                     images={el.images}
                     р
-                    categoryName={el.category.name}
+                    categoryName={el.category?.name}
                     quantity={el.quantity}
                     title={el.title}
                     onClick={() => handleClickItem(el.id)}

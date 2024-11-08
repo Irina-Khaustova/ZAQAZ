@@ -119,7 +119,7 @@ function Category() {
             sx={{
               backgroundColor: "rgba(246, 248, 249, 1)",
               padding: "37px",
-              height: "100%",
+              // height: "100%",
               marginTop: "64px",
             }}
           >
@@ -223,6 +223,7 @@ function Category() {
                     onModalToggle={handleToggleModalEdit}
                     putCategory={() => handlePutCategory(el)}
                     deleteCategory={() => handleDeleteCategory(el.id)}
+                    image={el.images[0]}
                     // isModalEdit={isModalEdit}
                   />
                 ))

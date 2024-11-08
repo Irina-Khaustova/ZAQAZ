@@ -34,71 +34,63 @@ function OrdersList() {
 
   const navigate = useNavigate();
 
-  // при загрузке страницы устанавливаем флаг для запроса списка заказов с сервера
-  useEffect(() => {
-    setTotalPages(null);
-    setUrl(`filter?size=${filter.size}`);
-  }, [filter]);
-
-  // считаем количество страниц при получении списка заказов
-  useEffect(() => {
-    setTotalPages(data ? data.page.totalPages : null);
-    setCurrentPage(data?.page.number);
-  }, [data]);
-
-  // обработчик полей фильтра
-  const onFilterChange = (e) => {
-    let name;
-    let value;
-    if (e.target) {
-      name = e.target.name;
-      value = e.target.value;
-    } else {
-      name = e.name;
-      value = e.value;
-    }
-    setFilter((prevFilter) => {
-      const updatedFilter = { ...prevFilter, [name]: value };
-      return updatedFilter;
-    });
-  };
-
-  // обработчик клика кнопки Выполнить -- формирование url для запроса
-  const onSubmit = () => {
-    let newUrl = `filter?`
-      // .concat(currentPage ? `page=${currentPage}` : "")
-      .concat(filter.size ? `&size=${filter.size}` : "")
-      .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
-      .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
-      .concat(filter.startDate ? `&startDate=${filter.startDate}` : "")
-      .concat(filter.searchWord ? `&searchWord=${filter.searchWord}` : "")
-      .concat(filter.orderNum ? `&orderName=${filter.orderNum}` : "")
-      .concat(filter.endDate ? `&endDate=${filter.endDate}` : "");
-    setUrl(newUrl);
-  };
-
+  
   // обработчик клика на строку товара
   const handleClickItem = (id) => {
     navigate(`/order/${id}`);
   };
 
-  // переключение между страницами
+  
+
+  const [appliedFilter, setAppliedFilter] = useState(filter);
+
+  useEffect(() => {
+    const newUrl = `filter?page=${currentPage}&size=${appliedFilter.size}`
+      .concat(appliedFilter.minPrice ? `&minPrice=${appliedFilter.minPrice}` : "")
+      .concat(appliedFilter.maxPrice ? `&maxPrice=${appliedFilter.maxPrice}` : "")
+      .concat(appliedFilter.startDate ? `&startDate=${appliedFilter.startDate}` : "")
+      .concat(appliedFilter.endDate ? `&endDate=${appliedFilter.endDate}` : "")
+      .concat(appliedFilter.searchWord ? `&searchWord=${appliedFilter.searchWord}` : "")
+      .concat(appliedFilter.orderNum ? `&orderName=${appliedFilter.orderNum}` : "");
+    setUrl(newUrl);
+  }, [currentPage, appliedFilter]);
+
+  // Обработчик изменения фильтра
+  const onFilterChange = (e) => {
+    const name = e.target?.name || e.name;
+    const value = e.target?.value || e.value;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
+  };
+
+  // Применение фильтров по нажатию кнопки
+  const onSubmit = () => {
+    setAppliedFilter(filter);
+    setCurrentPage(1); // Сбрасываем на первую страницу при применении фильтров
+  };
+
+  // Переключение страниц
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // очищаем все фильтры
+  // Очистка фильтров
   const handleClear = () => {
     setFilter({
       minPrice: "",
       maxPrice: "",
       marketplace: "",
       startDate: "",
-      endDate: null,
-      searchString: "",
+      endDate: "",
+      searchWord: "",
+      orderNum: "",
       size: 6,
     });
   };
+
+
 
   return (
     <>
@@ -112,7 +104,7 @@ function OrdersList() {
           flexDirection: "row",
           justifyContent: "center",
           paddingRight: "0",
-          height: "100vh",
+          // height: "100vh",
         }}
       >
         <SideBar sx={{ flex: "0 0 23%" }}></SideBar>
