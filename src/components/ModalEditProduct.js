@@ -87,7 +87,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
 
   useEffect(() => {
     setInputValues(initialValue);
-  }, [open]);
+  }, [open, initialValue]);
 
   useEffect(() => {
     setId(modalEdit.productIsEditId);
@@ -95,7 +95,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
 
   useEffect(() => {
     setInputValues(initialValue);
-  }, []);
+  }, [initialValue]);
 
   useEffect(() => {
    

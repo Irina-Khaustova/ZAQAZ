@@ -57,7 +57,7 @@ function CategoryItem({
           marginBottom: "25px",
         }}
       >
-        <Box sx={{ height: "99px", width: "40px" }}><img src={`hhttp://5.35.104.57:8080/images/${image.imagePath}.jpg`} alt={`Image ${id}`} /></Box>
+        <Box sx={{ height: "99px", width: "40px" }}><img src={`hhttp://5.35.104.57:8080/images/${image.imagePath}.jpg`} alt={`${id}`} /></Box>
         <Button
           id={id}
           variant="outlined"
