@@ -13,17 +13,21 @@ function CategoryItem({
   isModalAdd,
   isModalEdit,
   putCategory,
+  categoryType
 }) {
   const navigate = useNavigate();
 
   const handleGoSubcategory = (e) => {
-    console.log(e);
-    putCategory(id);
+    if(categoryType === "Category") {
+    putCategory();
     navigate(`/subcategory/${id}`);
+    }
   };
 
   const handlePutCategory = () => {
+    if(categoryType === "Category") {
     putCategory(id);
+    }
     onModalToggle();
   };
 
@@ -57,7 +61,7 @@ function CategoryItem({
           marginBottom: "25px",
         }}
       >
-        <Box sx={{ height: "99px", width: "40px" }}><img src={`hhttp://5.35.104.57:8080/images/${image.imagePath}.jpg`} alt={`${id}`} /></Box>
+        <Box sx={{ height: "99px", width: "40px" }}>Картинка</Box>
         <Button
           id={id}
           variant="outlined"
@@ -91,6 +95,10 @@ function CategoryItem({
             width: "100%",
             marginBottom: "10px",
             borderBottom: "1px solid #0000001A",
+            paddingBottom: "10px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end"
           }}
         >
           <Typography variant="text18Bold">{categoryName}</Typography>

@@ -9,6 +9,7 @@ import {
   TextField,
   Box,
   IconButton,
+  categoryType
 } from "@mui/material";
 import { ReactComponent as MyIconCamera } from "../../../image/icon-camera.svg";
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
@@ -16,7 +17,7 @@ import { useSelector } from "react-redux";
 import { usePutCategoryMutation } from "../../../api/Api";
 // import RequestProgressModal from "../../../components/RequestProgressModal";
 
-const ModalEdit = ({ open, close, value, refetch, deleteCategory }) => {
+const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }) => {
   // eslint-disable-next-line
   const [isDisabledDelete, setIsDisabledDelete] = useState(true);
   const [inputValue, setInputValue] = useState({
@@ -38,6 +39,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory }) => {
   const [putCategory] = usePutCategoryMutation();
 
   const onSigninSubmit = async () => {
+    if(categoryType === "Category") {
     try {
       await putCategory({
         id: category.id,
@@ -54,7 +56,26 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory }) => {
     } catch (err) {
       alert(err.data);
     }
-  };
+  } else if(categoryType === "SubCategory") {
+    try {
+      await putCategory({
+        parentId: category.id,
+        id: category.id,
+        name: inputValue.name,
+        nameEn: inputValue.nameEn,
+        store: {
+        id: 26,
+        },
+        extId: category.extId,
+        color: "b9f6ca",
+      }).unwrap();
+      refetch();
+      close();
+    } catch (err) {
+      alert(err.data);
+    }
+  }
+}
 
   const onhandleClick = (e) => {
     e.preventDefault();
@@ -134,7 +155,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory }) => {
           marginBottom: "11px",
         }}
       >
-        <Typography variant="text24Medium">Редактировать категорию</Typography>
+        <Typography variant="text24Medium">{categoryType === "Category"? "Редактировать категорию" : "Редактировать подкатегорию"}</Typography>
       </DialogTitle>
 
       <DialogContent

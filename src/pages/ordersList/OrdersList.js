@@ -238,7 +238,7 @@ function OrdersList() {
                       size="152px"
                       onChange={onFilterChange}
                       name="endDate"
-                      value={filter.endDate || ""}
+                      value={filter.startDate || ""}
                     ></DateInput>
                   </Box>
                 </Box>

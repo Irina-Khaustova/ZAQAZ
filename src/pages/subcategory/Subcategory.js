@@ -8,6 +8,8 @@ import { useParams } from "react-router-dom";
 import ButtonBack from "../../components/ButtonBack.js";
 import { useSelector } from "react-redux";
 import CategoryItem from "../category/components/CategoryItem.js";
+import ModalAdd from "../category/components/ModalAdd.js";
+import ModalEdit from "../category/components/ModalEdit.js";
 
 function SubCategory() {
   // eslint-disable-next-line
@@ -22,7 +24,7 @@ function SubCategory() {
   // параметры для фильтрации
   const [searchValue, setSearchValue] = useState();
 
-  const { data, error, isLoading} = useGetSubCategoryByIdQuery({id: id, url: url});
+  const { data, error, isLoading, refetch} = useGetSubCategoryByIdQuery({id: id, url: url});
   const { category } = useSelector((state) => state.category);
 
   // const navigate = useNavigate();
@@ -30,7 +32,7 @@ function SubCategory() {
   // при загрузке страницы устанавливаем флаг для запроса списка категорий с сервера
   useEffect(() => {
     console.log(category)
-    setSubcategory(category? category: null);
+    setSubcategory(category? category.name: null);
   }, [category]);
 
   useEffect(() => {
@@ -44,19 +46,22 @@ function SubCategory() {
   };
 
 // переключение состояний модальных окон
-  const handleToggleModal = (e) => {
-    if(e.target.name === "add") {
-    setIsModalAdd((prev) => !prev);
-    } else {
-      setIsModalEdit((prev) => !prev);
-    }
-  };
+const handleToggleModalAdd = (e) => {
+  setIsModalAdd((prev) => !prev);
+};
 
-  
+const handleRefetch = () => {
+  refetch();
+};
+
+const handleToggleModalEdit = (e) => {
+  setIsModalEdit((prev) => !prev);
+};
   
   // обработчик клика кнопки Выполнить -- формирование url для запроса
-  const handleAddCategory = () => {};
-
+  const handleAddCategory = () => {;
+  setIsModalAdd((prev) => !prev);
+  }
   // очищаем все фильтры
   // const handleClear = () => {};
 
@@ -136,8 +141,14 @@ console.log(data)
                       backgroundColor: "#F6F8F9"
                     }}
                   >
-                    + Создать категорию
+                    + Создать  подкатегорию
                   </Button>
+                  <ModalAdd
+                    close={handleToggleModalAdd}
+                    open={isModalAdd}
+                    modalCategory="Создание подкатегории"
+                    refetch={handleRefetch}
+                  ></ModalAdd>
                 </Box>
                 <Input
                   size="100%"
@@ -177,13 +188,23 @@ console.log(data)
                   images={el.images}
                   categoryName={el.name}
                   subcategory={el.subcategory}
-                  onModalToggle={handleToggleModal}
+                  onModalToggle={handleToggleModalEdit}
                   isModalAdd={isModalAdd}
                   isModalEdit={isModalEdit}
                   />
                 ))
               )}
             </Box>
+            {isModalEdit && (
+                <ModalEdit
+                  close={handleToggleModalEdit}
+                  open={isModalEdit}
+                  name="edit"
+                  refetch={handleRefetch}
+                  categoryType={"SubCategory"}
+                  // value={categoryName}
+                />
+              )}
           </Box>
         </Box>
       </Container>

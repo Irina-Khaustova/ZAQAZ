@@ -301,7 +301,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
           error={error}
           helperText={errorText}
           fullWidth
-          value={inputValue.name}
+          value={inputValue.name || ""}
           onChange={handleInputChange}
           autoComplete="off"
           sx={{

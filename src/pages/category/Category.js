@@ -52,7 +52,7 @@ function Category() {
     }
   }, [data, searchValue]);
 
-  useState(() => {
+  useState(() => { 
     setUrl("page=0&size=500");
   }, []);
 
@@ -224,6 +224,7 @@ function Category() {
                     putCategory={() => handlePutCategory(el)}
                     deleteCategory={() => handleDeleteCategory(el.id)}
                     image={el.images[0]}
+                    categoryType={"Category"}
                     // isModalEdit={isModalEdit}
                   />
                 ))
@@ -234,6 +235,7 @@ function Category() {
                   open={isModalEdit}
                   name="edit"
                   refetch={handleRefetch}
+                  categoryType={"Category"}
                   // value={categoryName}
                 />
               )}

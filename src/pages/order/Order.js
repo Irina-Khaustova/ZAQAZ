@@ -78,6 +78,7 @@ function Order() {
     setDataDraw(data? data : dataFilter? dataFilter: null);
     setTotalPages(Math.ceil(data?.orderItems.length / 6));
     setCurrentPage(1);
+    console.log(555, data)
   }, [data, dataFilter]);
 
   useEffect(() => {
