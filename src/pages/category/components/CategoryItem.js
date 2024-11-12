@@ -134,8 +134,8 @@ function CategoryItem({
             marginTop: "10px",
           }}
         >
-          <Typography sx={{ marginRight: "10px" }}>Перейти </Typography>
-          <MyIconArrowOrange />
+          {<Typography sx={{ marginRight: "10px", visibility: categoryType === "SubCategory"? "hidden": "visible" }}>Перейти </Typography>}
+          {categoryType === "Category"  && <MyIconArrowOrange />}
         </Button>
       </Box>
     </Box>

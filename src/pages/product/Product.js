@@ -16,6 +16,7 @@ function Product() {
   const [images, setImages] = useState([]);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const { modalEdit } = useSelector((state) => state.products);
+  const [specifications, setSpecifications] = useState([]);
 
   const { id } = useParams();
 
@@ -33,6 +34,39 @@ function Product() {
     setImages(data ? data.images : []);
   }, [data]);
 
+  useEffect(() => {
+    const technicalSpecifications = product?.technicalSpecifications;
+
+    if (
+      !technicalSpecifications ||
+      typeof technicalSpecifications !== "object"
+    ) {
+      setSpecifications([]);
+      return;
+    }
+
+    const russianSpecifications = {
+      grossWeight: "Масса брутто",
+      netWeight: "Масса нетто",
+      dimensions: "Габариты",
+      voltage: "Напряжение",
+      power: "Мощность",
+      current: "Ток",
+      additionalInfo1: "Дополнительная информация 1",
+      additionalInfo2: "Дополнительная информация 2",
+      additionalInfo3: "Дополнительная информация 3",
+    };
+
+    // Фильтруем и маппим характеристики
+    const filteredSpecifications = Object.entries(technicalSpecifications)
+      .filter(([key, value]) => value !== "" && value !== null && value !== 0)
+      .map(([key, value]) => ({
+        name: russianSpecifications[key] || key,
+        value,
+      }));
+    setSpecifications(filteredSpecifications);
+  }, [product]);
+
   const onhandleClickEdit = () => {
     dispatch(putIsOpenModalEdit({ isOpen: true, id: id }));
   };
@@ -46,19 +80,17 @@ function Product() {
   };
 
   const onhandleClickDelete = () => {
-    setIsOpenModalDelete(true)
+    setIsOpenModalDelete(true);
   };
 
   const onhandleDelete = () => {
-    deleteProduct(id)
-    .then(() => console.log("удалено"))
-    refetch()
-    .then(() => navigate("/products"));
-  }
+    deleteProduct(id).then(() => console.log("удалено"));
+    refetch().then(() => navigate("/products"));
+  };
 
   const handleRefetch = () => {
     refetch();
-  }
+  };
 
   return (
     <>
@@ -168,6 +200,13 @@ function Product() {
                     <Typography variant="text16Bold">
                       Технические характеристики
                     </Typography>
+                    <Box sx={{ padding: "10px" }}>
+                      {specifications.map((spec) => (
+                        <Typography key={spec.name}>
+                          {spec.name}: {spec.value}
+                        </Typography>
+                      ))}
+                    </Box>
                   </Box>
                 </Box>
                 <Box

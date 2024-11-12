@@ -130,7 +130,7 @@ function ProductItem({
             boxShadow: "none",
             "&:hover": {
               backgroundColor: "transparent",
-              color: "inherit",
+             
               boxShadow: "none",
             },
             border: "none",

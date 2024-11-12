@@ -191,6 +191,7 @@ console.log(data)
                   onModalToggle={handleToggleModalEdit}
                   isModalAdd={isModalAdd}
                   isModalEdit={isModalEdit}
+                  categoryType={"SubCategory"}
                   />
                 ))
               )}
