@@ -9,7 +9,7 @@ export const Api = createApi({
       // const token = getState().auth.authToken;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
-        headers.set("Content-Type", `application/json`);
+        // headers.set("Content-Type", `application/json`);
       }
 
       return headers; // Возвращаем модифицированные заголовки
@@ -109,6 +109,18 @@ export const Api = createApi({
     getProduct: builder.query({
       query: (id) => `v1/store/category/item/${id}`,
     }),
+    getPicture: builder.query({
+      query(id) {
+        return {
+          url: `v1/store/image?imageName=${id}`,
+          method: 'GET',
+          // headers: {
+          //   'Content-Type': 'image/*',
+          // },
+        }
+      }
+    }),
+   
     deleteProduct: builder.mutation({
       query(id) {
         return {
@@ -147,5 +159,6 @@ export const {
   usePutStatusProductMutation,
   useDeleteProductMutation,
   usePostProductMutation,
-  useDeleteCategoryMutation
+  useDeleteCategoryMutation,
+  useGetPictureQuery
 } = Api;

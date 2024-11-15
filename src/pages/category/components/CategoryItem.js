@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { ReactComponent as MyIconArrowOrange } from "../../../image/arrow-right-orange.svg";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as MyIconButtonEdit } from "../../../image/edit.svg";
+import { useGetPictureQuery } from "../../../api/Api";
 
 function CategoryItem({
   id,
@@ -15,6 +16,7 @@ function CategoryItem({
   putCategory,
   categoryType
 }) {
+  const [imagePath, setImagePath] = useState('')
   const navigate = useNavigate();
 
   const handleGoSubcategory = (e) => {
@@ -30,6 +32,50 @@ function CategoryItem({
     }
     onModalToggle();
   };
+
+  const {data: imageData} = useGetPictureQuery(image.imagePath)
+  
+ console.log(imageData)
+// useEffect(()=> {
+//   async function fetchAndSetImage() {
+//     const token = localStorage.getItem("key")
+//     try {
+//       // Выполняем запрос с заголовками
+//       const response = await fetch(`api/v1/store/image?imageName=156_1728311542103`, {
+//         method: 'GET',
+//         headers: {
+//           // 'Content-Type': 'image/jpeg',
+//           'Authorization': `Bearer ${token}`,
+
+//         },
+//       });
+
+//       // Проверяем успешность ответа
+//       if (!response.ok) {
+//         throw new Error(`Ошибка загрузки: ${response.statusText}`);
+//       }
+
+//       // Записываем URL изображения в переменную setImagePath
+//       const imageUrl = response.url;
+//       setImagePath(imageUrl);
+
+//       // Также устанавливаем изображение в элемент <img>, если требуется
+//       const imgElement = document.querySelector('#myImage');
+//       if (imgElement) {
+//         imgElement.src = imageUrl;
+//       }
+//     } catch (error) {
+//       console.error('Ошибка при получении картинки:', error);
+//       setImagePath(null); // Сбрасываем значение переменной в случае ошибки
+//     }
+//   }
+
+//   // Вызываем функцию сразу при изменении зависимости `image`
+//   if (image.imagePath) {
+//     fetchAndSetImage(image.imagePath);
+//   }
+// },[image.imagePath])
+  
 
   return (
     <Box
@@ -61,7 +107,7 @@ function CategoryItem({
           marginBottom: "25px",
         }}
       >
-        <Box sx={{ height: "99px", width: "40px" }}>Картинка</Box>
+        <Box sx={{ height: "99px", width: "40px" }}><img src={(imagePath)} alt={id}/></Box>
         <Button
           id={id}
           variant="outlined"
