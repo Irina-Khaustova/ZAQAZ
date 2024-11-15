@@ -110,15 +110,11 @@ export const Api = createApi({
       query: (id) => `v1/store/category/item/${id}`,
     }),
     getPicture: builder.query({
-      query(id) {
-        return {
-          url: `v1/store/image?imageName=${id}`,
-          method: 'GET',
-          // headers: {
-          //   'Content-Type': 'image/*',
-          // },
-        }
-      }
+      query: (id) => ({
+        url: `v1/store/image?imageName=${id}`,
+        responseHandler: (res) => res.blob(),
+      }),
+      transformResponse: (res) => URL.createObjectURL(res),
     }),
    
     deleteProduct: builder.mutation({

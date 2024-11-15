@@ -33,9 +33,8 @@ function CategoryItem({
     onModalToggle();
   };
 
-  const {data: imageData} = useGetPictureQuery(image.imagePath)
-  
- console.log(imageData)
+  const { data } = useGetPictureQuery(image.imagePath);
+
 // useEffect(()=> {
 //   async function fetchAndSetImage() {
 //     const token = localStorage.getItem("key")
@@ -107,7 +106,13 @@ function CategoryItem({
           marginBottom: "25px",
         }}
       >
-        <Box sx={{ height: "99px", width: "40px" }}><img src={(imagePath)} alt={id}/></Box>
+        <Box>
+          <img
+            style={{ objectFit: 'cover', width: '100%', height: 'auto' }}
+            src={data}
+            alt={id}
+          />
+        </Box>
         <Button
           id={id}
           variant="outlined"
