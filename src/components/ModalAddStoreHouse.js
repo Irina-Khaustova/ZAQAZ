@@ -12,10 +12,10 @@ TextField,
 Box,
 IconButton,
 } from "@mui/material";
-import { ReactComponent as MyIconCamera } from "../../../image/icon-camera.svg";
-import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
-import { usePostCategoryMutation } from "../../../api/Api";
-import RequestProgressModal from "../../../components/RequestProgressModal";
+import { ReactComponent as MyIconCamera } from "../image/icon-camera.svg";
+import { ReactComponent as MyIconExit } from "../image/icon-exit.svg";
+import { usePostCategoryMutation } from "../api/Api";
+import RequestProgressModal from "../components/RequestProgressModal";
 
 const ModalAddStoreHouse = ({ open, close, modalCategory, refetch }) => {
 const [inputValue, setInputValue] = useState({

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Box,
   Container,
@@ -12,9 +12,11 @@ import { ReactComponent as MyIconGoods } from "../image/goods.svg";
 import { ReactComponent as MyIconOrders } from "../image/orders.svg";
 import { ReactComponent as MyIconCategory } from "../image/category.svg";
 import { useLocation, NavLink } from "react-router-dom";
+import ModalChoiceStoreHouse from "./ModalChoiceStoreHouse";
 
 function SideBar() {
   const location = useLocation(); // Получаем текущий URL
+  const [isOpenModalChoiceStoreHouse, setIsOpenModalChoiceStoreHouse] = useState(false);
 
   const menuItems = [
     {
@@ -25,6 +27,10 @@ function SideBar() {
     { text: "Заказы", icon: <MyIconOrders />, link: "/ordersList" },
     { text: "Товары", icon: <MyIconGoods />, link: "/products" },
   ];
+
+  const onClose = () => {
+    setIsOpenModalChoiceStoreHouse(false);
+  }
 
   return (
     <>
@@ -152,6 +158,7 @@ function SideBar() {
             </ListItem>
           </List> */}
         </Box>
+        <ModalChoiceStoreHouse open={isOpenModalChoiceStoreHouse} close={onClose}></ModalChoiceStoreHouse>
       </Container>
     </>
   );

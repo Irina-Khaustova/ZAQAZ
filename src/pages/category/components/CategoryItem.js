@@ -120,7 +120,7 @@ function CategoryItem({
       <Box>
         <Box
           sx={{
-            height: "125px",
+            height: "160px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -149,7 +149,9 @@ function CategoryItem({
           <Box
             sx={{
               width: "100%",
-              height: "100px",
+              maxWidth: "160px",
+              height: "auto",
+              maxHeight: "160px",
               marginTop: "10px",
               display: "flex",
               flexDirection: "column",
@@ -157,7 +159,7 @@ function CategoryItem({
             }}
           >
             <img
-              style={{ objectFit: "cover", width: "70%", height: "120px" }}
+              style={{ objectFit: "contain", width: "100%", height: "auto" }}
               src={data}
               alt={id}
             />

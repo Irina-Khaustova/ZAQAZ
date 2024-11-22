@@ -118,8 +118,8 @@ function ProductItem({
       {/* Отображение текущего изображения */}
       <Box
   sx={{
-    width: "150px",
-    height: "150px",
+    width: "160px",
+    height: "160px",
     position: "relative", // Для правильного наложения изображений
     overflow: "hidden", // Скрыть невидимые части
   }}
@@ -134,8 +134,10 @@ function ProductItem({
         const imageStyle = {
           display: currentIndex === index ? 'block' : 'none', // Показываем только текущее изображение
           width: '100%',
+          maxWidth: "160px",
           height: 'auto',
-          objectFit: 'cover', // Для корректного отображения изображения
+          maxHeight: "160px",
+          objectFit: 'contain', // Для корректного отображения изображения
         };
 
         return (
@@ -143,7 +145,8 @@ function ProductItem({
             key={index} 
             src={image.imageUrl} 
             alt={`Product ${image.id}`} 
-            style={imageStyle} 
+            style={imageStyle}
+            
           />
         );
       }): <Box sx={{width: "150px",
