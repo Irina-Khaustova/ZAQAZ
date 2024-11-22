@@ -13,7 +13,7 @@ import ModalDelete from "../../components/ModalDelete.js";
 import ProductImage from "../../components/ProductImage.js";
 
 function Product() {
-  const [product, setProduct] = useState(0);
+  const [product, setProduct] = useState(null);
   const [images, setImages] = useState([]);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const { modalEdit } = useSelector((state) => state.products);

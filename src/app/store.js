@@ -5,6 +5,7 @@ import { Api } from "../api/Api";
 import subcategory from "../pages/subcategory/subcategorySlice";
 import   category  from "../pages/category/categorySlice";
 import products from "../pages/products/ProductsSlice";
+import sideBar from "../components/SideBarSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,7 +13,7 @@ export const store = configureStore({
      subcategory: subcategory,
      category: category,
      products: products,
-
+     sideBar: sideBar,
     [Api.reducerPath]: Api.reducer,
   },
     middleware: (getDefaultMiddleware) =>
