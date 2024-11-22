@@ -46,7 +46,7 @@ function InputSelect({
               borderRadius: "16px",
               height: "38px",
               "& fieldset": {
-                border: "1px solid rgba(246, 248, 249, 1)",
+                border: "1px solid rgba(235, 235, 235, 1)",
               },
               "&:hover fieldset": {
                 borderColor: "rgba(200, 200, 200, 1)",

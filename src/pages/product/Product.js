@@ -10,6 +10,7 @@ import { ReactComponent as MyIconTrash } from "../../image/icon-trash.svg";
 import { putIsOpenModalEdit } from "../products/ProductsSlice.js";
 import ModalEditProduct from "../../components/ModalEditProduct.js";
 import ModalDelete from "../../components/ModalDelete.js";
+import ProductImage from "../../components/ProductImage.js";
 
 function Product() {
   const [product, setProduct] = useState(0);
@@ -17,6 +18,8 @@ function Product() {
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const { modalEdit } = useSelector((state) => state.products);
   const [specifications, setSpecifications] = useState([]);
+  const [drawImages, setDrawImages] = useState([]);
+  const [currentImage, setCurrentImage] = useState(0);
 
   const { id } = useParams();
 
@@ -28,11 +31,54 @@ function Product() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // при загрузке страницы устанавливаем флаг для запроса списка категорий с сервера
   useEffect(() => {
-    setProduct(data);
-    setImages(data ? data.images : []);
+    if (data && Array.isArray(data.images)) {
+      setProduct(data);
+      setImages(data.images);
+      if (data.images.length > 0) {
+        setCurrentImage(data.images[0].imagePath); // Устанавливаем первый элемент как текущий
+      } else {
+        setCurrentImage(null); // Нет изображения
+      }
+    }
   }, [data]);
+
+
+//   useEffect(() => {
+//     if (data) {
+//     const fetchImages = async () => {
+//       const token = localStorage.getItem("key")
+//       const loadedImages = [];
+    
+//       for (const id of data.images) {
+//         try {
+//           let url = `api/v1/store/image?imageName=336_1730878351622_837edf9a-7032-4ae5-8746-584abcab3e7e`
+//           console.log(url)
+//           const response = await fetch(url, {
+//             method: 'GET',
+//             headers: {
+//               'Authorization': `Bearer ${token}`,  
+//             },
+//           });
+//           if (!response.ok) {
+//             throw new Error(`Failed to fetch image for ${id}`);
+//           }
+//           console.log(333222, response)
+//           const blob = await response.blob();
+//           const imageUrl = URL.createObjectURL(blob);
+//           console.log(imageUrl)
+//           loadedImages.push({ imageUrl});
+//         } catch (error) {
+//           loadedImages.push({ id, error: true });
+//         }
+//       }
+//       console.log(333, loadedImages)
+//       setDrawImages(loadedImages); 
+//     };
+
+//     fetchImages();
+//   }
+// }, [images, product]);
 
   useEffect(() => {
     const technicalSpecifications = product?.technicalSpecifications;
@@ -90,6 +136,11 @@ function Product() {
 
   const handleRefetch = () => {
     refetch();
+  };
+
+  const handleImageClick = (imagePath) => {
+    console.log(222)
+    setCurrentImage(imagePath);
   };
 
   return (
@@ -201,8 +252,8 @@ function Product() {
                       Технические характеристики
                     </Typography>
                     <Box sx={{ padding: "10px" }}>
-                      {specifications.map((spec) => (
-                        <Typography key={spec.name}>
+                      {specifications.map((spec,index) => (
+                        <Typography key={ index}>
                           {spec.name}: {spec.value}
                         </Typography>
                       ))}
@@ -226,53 +277,60 @@ function Product() {
                       sx={{
                         width: "375px",
                         height: "367px",
-                        backgroundColor: "#EAEAE8",
+
                         border: "1px solid #EAEAE8",
                         borderRadius: "16px",
                       }}
-                    ></Box>
+                    >
+                      <ProductImage
+                        className="carousel-image"
+                        sx={{
+                          width: "150px",
+                          height: "150px",
+                          objectFit: "cover",
+                          border: "1px solid #EAEAE8",
+                          borderRadius: "16px",
+                        }}
+                        imagePath={currentImage}
+                      />
+                    </Box>
                     <Box
                       sx={{
+                        width: "100%",
                         display: "flex",
                         flexDirection: "row",
                         gap: "18px",
                         flexWrap: "wrap",
-                        marginTop: "17px",
                       }}
                     >
-                      {images &&
-                        images.map((image) => (
-                          <Box
-                            key={image.id}
-                            sx={{
-                              width: "80px",
-                              height: "80px",
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "cenetr",
-                              alignItems: "center",
-                              backgroundColor: "#EAEAE8",
-                              border: "1px solid #EAEAE8",
-                              borderRadius: "16px",
-                            }}
-                          >
-                            {image.imagePath ? (
-                              <img
-                                src={image.imagePath}
-                                alt={image.id}
-                                style={{
-                                  Width: "80px",
-                                  Height: "80px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            ) : (
-                              <Box sx={{ width: "80px", height: "80px" }}>
-                                No Image
-                              </Box>
-                            )}
-                          </Box>
-                        ))}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: "18px",
+                          marginTop: "17px",
+                          width: "80px",
+                          height: "80px",
+                        }}
+                      >
+                        {/* {drawImages &&
+                          drawImages.map((image, index) => (
+                            <img
+                              key={image.index}
+                              src={image.imageUrl}
+                              alt={image.id}
+                            >
+                            </img>
+                          ))} */}
+                          {images.map((el,index) => (<ProductImage sx={{
+      width: "80px",
+      height: "80px",
+      objectFit: "cover",
+      cursor: "pointer", // Добавим визуальный индикатор клика
+      border: currentImage === el.imagePath ? "2px solid #000" : "1px solid #EAEAE8",
+      borderRadius: "8px",
+    }} onClick={() => handleImageClick(el.imagePath)} key={el.imagePath} imagePath={el.imagePath}></ProductImage>))}
+                      </Box>
                     </Box>
                   </Box>
                   <Box

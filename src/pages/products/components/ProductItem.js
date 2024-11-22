@@ -1,8 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { ReactComponent as MyIconArrowOrange } from "../../../image/arrow-right-orange.svg";
 import { ReactComponent as MyIconButtonEdit } from "../../../image/edit.svg";
-
+import  IconNoPhoto  from "../../../image/no-camera.jpg"
 
 function ProductItem({
   id,
@@ -13,8 +13,52 @@ function ProductItem({
   title,
   onClick,
 }) {
-  // const navigate = useNavigate();
-  // const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [DrawImages, setDrawImages] = useState([]);
+  
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const token = localStorage.getItem("key")
+      const loadedImages = [];
+      for (const id of images) {
+        try {
+          const response = await fetch(`api/v1/store/image?imageName=${id.imagePath}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,  
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to fetch image for ${id}`);
+          }
+          console.log(1111, response)
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          loadedImages.push({ id, imageUrl });
+        } catch (error) {
+          loadedImages.push({ id, error: true });
+        }
+        console.log(loadedImages)
+      }
+      setDrawImages(loadedImages); 
+    };
+
+    fetchImages();
+  }, [images]);
+
+  const handleNext = () => {
+    if (images.length > 0) {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }
+  };
+  const handlePrev = () => {
+    if (images.length > 0) {
+      setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    }
+  };
 
   return (
     <Box
@@ -42,12 +86,102 @@ function ProductItem({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-between",
-
           position: "relative",
           marginBottom: "25px",
         }}
+      ><Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 2, // Расстояние между элементами
+        position: "relative",
+        width: "100%",
+        height: "35rem",
+      }}
+    >
+      <Box >
+      {/* Кнопка для переключения назад */}
+      {DrawImages.length > 1 && <Button
+        onClick={handlePrev}
+        sx={{
+          position: "absolute",
+          left: "10px",
+          zIndex: 1,
+          bottom: "-10px",
+          color: "rgba(255, 149, 0, 1)",
+        }}
       >
-        <Box sx={{ height: "99px", width: "40px" }}>картинка</Box>
+        ◀
+      </Button>}
+
+      {/* Отображение текущего изображения */}
+      <Box
+  sx={{
+    width: "150px",
+    height: "150px",
+    position: "relative", // Для правильного наложения изображений
+    overflow: "hidden", // Скрыть невидимые части
+  }}
+>
+<div>
+      {DrawImages.length > 0? DrawImages.map((image, index) => {
+        if (image.error) {
+          return <p key={index}>Error loading image for product {image.id}</p>;
+        }
+
+        // Определяем стиль для видимости изображения в зависимости от currentPage
+        const imageStyle = {
+          display: currentIndex === index ? 'block' : 'none', // Показываем только текущее изображение
+          width: '100%',
+          height: 'auto',
+          objectFit: 'cover', // Для корректного отображения изображения
+        };
+
+        return (
+          <img 
+            key={index} 
+            src={image.imageUrl} 
+            alt={`Product ${image.id}`} 
+            style={imageStyle} 
+          />
+        );
+      }): <Box sx={{width: "150px",
+        height: "150px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}><img style={{width: "100px", height: "100px", margin: "auto"}} src={IconNoPhoto}></img></Box>}
+    </div>
+  {/* {images.map((el, index) => (
+    <ProductImage
+      key={el.id || index}
+      sx={{
+        position: "absolute", // Все изображения в одном месте
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        display: currentIndex === index ? "block" : "none", // Только одно изображение видно
+      }}
+      imagePath={el.imagePath}
+    />
+  ))} */}
+</Box>
+
+      {/* Кнопка для переключения вперед */}
+      {DrawImages.length > 1 && <Button
+        onClick={handleNext}
+        sx={{
+          position: "absolute",
+          right: "2px",
+          zIndex: 1,
+          bottom: "-10px",
+          color: "rgba(255, 149, 0, 1)",
+          
+        }}
+      >
+        ▶
+      </Button>}
+    </Box>
+    </Box>
         <Button
           id={id}
           variant="outlined"

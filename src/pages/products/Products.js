@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SideBar from "../../components/SideBar.js";
@@ -12,8 +12,8 @@ import ModalAdd from "./components/ModalAdd.js";
 import { putIsOpenModalEdit } from "../products/ProductsSlice.js";
 import ModalEditProduct from "../../components/ModalEditProduct.js";
 import InputSelect from "../../components/InputSelect.js";
-import ProductItem from "./components/ProductItem.js";
 import { useDispatch, useSelector } from "react-redux";
+const LazyProductItem = lazy(() => import("./components/ProductItem.js"));
 
 function Products() {
   const [totalPages, setTotalPages] = useState(0);
@@ -89,8 +89,8 @@ function Products() {
 
   const onSubmit = () => {
     console.log(22, filter);
-    let nUrl = `filter?size=500`
-      // .concat(currentPage ? `&page=${currentPage}` : "")
+    let nUrl = `filter?size=8`
+      .concat(currentPage ? `&page=${currentPage}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
       .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
       .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
@@ -440,9 +440,10 @@ function Products() {
               {isLoading ? (
                 <Typography>Loading...</Typography>
               ) : dataDraw ? (
-                dataDraw?.content.map((el) => (
-                  <ProductItem
-                    key={el.id}
+                dataDraw?.content.map((el, index) => (
+                  <Suspense fallback={<div>Загрузка...</div>}>
+                  <LazyProductItem
+                    key={`${el.id}-${index}`}
                     id={el.id}
                     images={el.images}
                     р
@@ -452,16 +453,17 @@ function Products() {
                     onClick={() => handleClickItem(el.id)}
                     isOpenModal={() => isOpenModalEdit(el.id)}
                   />
+                  </Suspense>
                 ))
               ) : null}
             </Box>
-          </Box>
-          <Box>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
             ></Pagination>
+          </Box>
+          <Box>
           </Box>
           <ModalEditProduct
             open={modalEdit.isOpenModalEdit}

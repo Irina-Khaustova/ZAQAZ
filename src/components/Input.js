@@ -26,7 +26,7 @@ function Input({
             startAdornment: icon ? (
               <InputAdornment
                 position={position}
-                style={{
+                sx={{
                   cursor: "pointer",
                   "&:MuiTypografy-Root": {
                     color: "#424242",
