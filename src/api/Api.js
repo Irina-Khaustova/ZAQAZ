@@ -116,6 +116,9 @@ export const Api = createApi({
       }),
       transformResponse: (res) => URL.createObjectURL(res),
     }),
+    getStoreHouses: builder.query({
+      query: () => `v1/store`,
+    }),
    
     deleteProduct: builder.mutation({
       query(id) {
@@ -156,5 +159,7 @@ export const {
   useDeleteProductMutation,
   usePostProductMutation,
   useDeleteCategoryMutation,
-  useGetPictureQuery
+  useGetPictureQuery,
+  getPicture,
+  useGetStoreHousesQuery
 } = Api;

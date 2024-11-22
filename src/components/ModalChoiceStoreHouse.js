@@ -13,27 +13,32 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  FormLabel,
 } from "@mui/material";
 
 import { ReactComponent as MyIconExit } from "../image/icon-exit.svg";
 import { usePostProductMutation } from "../api/Api";
 import ModalAddStoreHouse from "./ModalAddStoreHouse";
+import { useGetStoreHousesQuery } from "../api/Api";
 
 const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
   const [errorText, setErrorText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpenAddStoreHouseModal, setisOpenAddStoreHouseModal] =
     useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
   const [storeHouse, setStoreHouse] = useState("");
 
   const [postStireHouse, { error, isLoading, isSuccess }] =
     usePostProductMutation();
 
-  const data = [
-    { value: "Казпочта", description: "г. Алматы - Описание склада" },
-    { value: "Казпочта", description: "г. Алматы - Описание склада" },
-    { value: "Казпочта", description: "г. Алматы - Описание склада" },
-  ];
+  // const data = [
+  //   { value: "Казпочта", description: "г. Алматы - Описание склада" },
+  //   { value: "Казпочта", description: "г. Алматы - Описание склада" },
+  //   { value: "Казпочта", description: "г. Алматы - Описание склада" },
+  // ];
+
+  const { data } = useGetStoreHousesQuery();
 
   const postStoreHouse = async () => {
     if (isSubmitting) return;
@@ -59,6 +64,11 @@ const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
     if (!Object.values(error).some((value) => value !== false)) {
       postStoreHouse(e.target.value);
     }
+  };
+
+  const handleChange = (event) => {
+    // setSelectedValue(event.target.value);
+    console.log("Выбрано значение:", event.target);
   };
 
   const onhandleClickChoice = () => {};
@@ -152,23 +162,59 @@ const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
               boxSizing: "border-box",
             }}
           >
-            <FormControl>
+            <FormControl
+              sx={{ width: "100%", minHeight: "42px", marginBottom: "48px" }}
+            >
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="female"
                 name="radio-buttons-group"
+                value={selectedValue} // Привязываем к состоянию
+                onChange={handleChange} // Обрабатываем изменение
               >
-                {data.map((el, index) => (
-                  <FormControlLabel
-                    key={el.value + index}
-                    value={el.value}
-                    control={<Radio />}
-                    label={el.value}
-                  />
-                ))}
+                {data
+                  ? data.content.map((el, index) => (
+                      <FormControlLabel
+                        key={`${el.value}-${index}`}
+                        value={el.value}
+                        label={el.title}
+                        control={
+                          <Radio
+                            sx={{
+                              color:
+                                selectedValue === el.value
+                                  ? "orange"
+                                  : "rgba(0, 0, 0, 0.54)",
+                              "&.Mui-checked": {
+                                color: "#1E90FF",
+                              },
+                            }}
+                          />
+                        }
+                        sx={{
+                          borderBottom: "1px solid rgba(246, 248, 249, 1)",
+                          width: "100%",
+                        }}
+                      />
+                    ))
+                  : null}
+                {
+                  // <FormControl>
+                  //   <FormLabel>Gender</FormLabel>
+                  //   <RadioGroup
+                  //     defaultValue="female"
+                  //     name="controlled-radio-buttons-group"
+                  //     value={selectedValue}
+                  //     onChange={handleChange}
+                  //     sx={{ my: 1 }}
+                  //   >
+                  //     {data? data.content?.map((el, index) => <Radio key={`${el.value}-${index}`} value="female" label={el.title} />
+                  //     ) : null }
+                  //   </RadioGroup>
+                  // </FormControl>
+                }
               </RadioGroup>
             </FormControl>
-            <Typography sx={{ marginTop: "15px" }}>Категория</Typography>
           </DialogContent>
 
           <DialogActions
@@ -184,7 +230,7 @@ const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
               type="submit"
               fullWidth
               variant="contained"
-              color="secondary"
+              backgroundColor="rgba(246, 248, 249, 1)"
               boxshadow="none"
               onClick={onhandleClickAdd}
               sx={{
@@ -192,10 +238,10 @@ const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
                 border: "1px solid rgba(246, 248, 249, 1)",
                 borderRadius: "16px",
                 marginLeft: "0 !important",
-                margingTop: "0 !important",
+                marginTop: "0 !important",
                 textTransform: "none",
                 boxShadow: "none",
-                marginBottom: "37px",
+                marginBottom: "8px",
                 "&:hover": {
                   boxShadow: "none",
                 },
@@ -207,7 +253,7 @@ const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
                 },
               }}
             >
-              <Typography variant="text16Bold">Сохранить</Typography>
+              <Typography variant="text16Bold">+ Новый склад</Typography>
             </Button>
             <Button
               type="submit"
@@ -221,7 +267,7 @@ const ModalChoiceStoreHouse = ({ open, close, refetch }) => {
                 border: "1px solid rgba(246, 248, 249, 1)",
                 borderRadius: "16px",
                 marginLeft: "0 !important",
-                margingTop: "0 !important",
+                marginTop: "0 !important",
                 textTransform: "none",
                 boxShadow: "none",
                 marginBottom: "37px",

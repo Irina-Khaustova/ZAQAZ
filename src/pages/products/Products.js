@@ -164,7 +164,7 @@ function Products() {
           flexDirection: "row",
           justifyContent: "center",
           paddingRight: "0",
-          height: "100vh",
+          height: "100%",
         }}
       >
         <SideBar sx={{ flex: "0 0 23%" }}></SideBar>
@@ -446,7 +446,6 @@ function Products() {
                     key={`${el.id}-${index}`}
                     id={el.id}
                     images={el.images}
-                    р
                     categoryName={el.category?.name}
                     quantity={el.quantity}
                     title={el.title}

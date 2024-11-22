@@ -6,6 +6,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  Typography,
+  IconButton
 } from "@mui/material";
 import { ReactComponent as MyIconZaqaz } from "../image/zaqaz.svg";
 import { ReactComponent as MyIconGoods } from "../image/goods.svg";
@@ -13,10 +15,13 @@ import { ReactComponent as MyIconOrders } from "../image/orders.svg";
 import { ReactComponent as MyIconCategory } from "../image/category.svg";
 import { useLocation, NavLink } from "react-router-dom";
 import ModalChoiceStoreHouse from "./ModalChoiceStoreHouse";
+import {ReactComponent as MyIconArrawRight} from "../image/icon-arraw-left-sidebar.svg"
+import { useSelector } from "react-redux";
 
 function SideBar() {
   const location = useLocation(); // Получаем текущий URL
   const [isOpenModalChoiceStoreHouse, setIsOpenModalChoiceStoreHouse] = useState(false);
+  const {storeHouse} = useSelector(state => state.sideBar);
 
   const menuItems = [
     {
@@ -32,6 +37,10 @@ function SideBar() {
     setIsOpenModalChoiceStoreHouse(false);
   }
 
+  const handleClick = () => {
+  setIsOpenModalChoiceStoreHouse(true)
+  }
+
   return (
     <>
       <Container
@@ -39,12 +48,14 @@ function SideBar() {
         maxWidth="false"
         sx={{
           flex: "0 0 23%",
+          height: "auto",
           maxWidth: "none",
           paddingLeft: "28px",
           paddingRight: "20px",
           paddingTop: "26px",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "flex-start",
           boxSizing: "border-box",
         }}
       >
@@ -54,6 +65,8 @@ function SideBar() {
             flexDirection: "column",
             alignItems: "flex-start",
             width: "100%",
+            height: "100%",
+            justifyContent: "flex-start"
           }}
         >
           <Box>
@@ -157,7 +170,20 @@ function SideBar() {
               />
             </ListItem>
           </List> */}
+          
         </Box>
+        {/* <Box sx={{display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px"}}>
+        <Typography variant="text14Medium" >{storeHouse? storeHouse: null}</Typography>
+          <Typography variant="text14Medium">Выберите склад</Typography>
+          <IconButton
+            variant="text"
+            onClick={handleClick}
+            sx={{ marginLeft: "10px" }}
+          >
+            <MyIconArrawRight width={"8px"} />
+            
+          </IconButton>
+        </Box> */}
         <ModalChoiceStoreHouse open={isOpenModalChoiceStoreHouse} close={onClose}></ModalChoiceStoreHouse>
       </Container>
     </>

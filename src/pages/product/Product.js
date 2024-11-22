@@ -220,7 +220,7 @@ function Product() {
                           {product.quantity} шт
                         </Typography>
                       </Box>
-                      <Box sx={{ marginLeft: "33px" }}>
+                      <Box sx={{ marginLeft: "33px", borderRight: "1px solid #EBEBEB", width: "156px",}}>
                         <Typography
                           display="block"
                           variant="text16Bold"
@@ -230,6 +230,18 @@ function Product() {
                         </Typography>
                         <Typography display="block" variant="text16Light">
                           {product.price} тг
+                        </Typography>
+                      </Box>
+                      <Box sx={{ marginLeft: "33px" }}>
+                        <Typography
+                          display="block"
+                          variant="text16Bold"
+                          marginBottom="8px"
+                        >
+                          Артикул
+                        </Typography>
+                        <Typography display="block" variant="text16Light">
+                          {product.sku} 
                         </Typography>
                       </Box>
                     </Box>
