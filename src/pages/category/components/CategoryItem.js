@@ -16,12 +16,15 @@ function CategoryItem({
   isModalEdit,
   putCategory,
   categoryType,
+  putSubcategory
 }) {
   const [imagePath, setImagePath] = useState("");
   const navigate = useNavigate();
   const [subCategoryDraw, setSubCategoryDraw] = useState([]);
   const [isShowEllipsis, setIsShowEllipsis] = useState(false);
   const containerRef = useRef(null);
+
+  console.log("images", images, "image", image)
 
   useEffect(() => {
     if (subcategory) {
@@ -50,14 +53,24 @@ function CategoryItem({
     }
   };
 
-  const handlePutCategory = () => {
+  const handlePutCategory = () => { 
+    console.log(id)
     if (categoryType === "Category") {
+      console.log(666, id)
       putCategory(id);
+    } else {
+      putSubcategory(id)
+      console.log(333, id)
     }
     onModalToggle();
   };
 
-  const { data } = useGetPictureQuery(categoryType === 'Category' ? image.imagePath : images[0].imagePath);
+ 
+
+
+
+  // const { data } = useGetPictureQuery(categoryType === 'Category' ? image?.imagePath : images[0]?.imagePath);
+  const { data } = useGetPictureQuery(images[0]?.imagePath);
 
   // useEffect(()=> {
   //   async function fetchAndSetImage() {

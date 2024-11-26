@@ -23,6 +23,8 @@ function SideBar() {
   const [isOpenModalChoiceStoreHouse, setIsOpenModalChoiceStoreHouse] = useState(false);
   const {storeHouse} = useSelector(state => state.sideBar);
 
+  console.log(1025, storeHouse)
+
   const menuItems = [
     {
       text: "Категории/подкатегории",
@@ -130,50 +132,10 @@ function SideBar() {
               </ListItem>
             ))}
           </List>
-          {/* <List>
-            <ListItem component={Link} to="/category">
-              <ListItemIcon>
-                <MyIconCategory />
-              </ListItemIcon>
-              <ListItemText
-                sx={{ color: "rgba(33, 33, 33, 1)" }}
-                primaryTypographyProps={{
-                  style: { fontWeight: "600", fontSize: "16px" },
-                }}
-                primary="Категории/подкатегории"
-              />
-            </ListItem>
-
-            <ListItem component={Link} to="/ordersList">
-              <ListItemIcon>
-                <MyIconOrders />
-              </ListItemIcon>
-              <ListItemText
-                sx={{ color: "rgba(33, 33, 33, 1)" }}
-                primaryTypographyProps={{
-                  style: { fontWeight: "600", fontSize: "16px" },
-                }}
-                primary="Заказы"
-              />
-            </ListItem>
-
-            <ListItem component={Link} to="/goods">
-              <ListItemIcon>
-                <MyIconGoods />
-              </ListItemIcon>
-              <ListItemText
-                sx={{ color: "rgba(33, 33, 33, 1)" }}
-                primaryTypographyProps={{
-                  style: { fontWeight: "600", fontSize: "16px" },
-                }}
-                primary="Товары"
-              />
-            </ListItem>
-          </List> */}
-          
         </Box>
-        {/* <Box sx={{display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px"}}>
-        <Typography variant="text14Medium" >{storeHouse? storeHouse: null}</Typography>
+        <Box sx={{display: "flex", flexDirection: "column", alignItems: "start", marginBottom: "20px"}}>
+        <Typography variant="text20Bold" >{storeHouse? storeHouse.title: null}</Typography>
+        <Box>
           <Typography variant="text14Medium">Выберите склад</Typography>
           <IconButton
             variant="text"
@@ -183,7 +145,8 @@ function SideBar() {
             <MyIconArrawRight width={"8px"} />
             
           </IconButton>
-        </Box> */}
+        </Box>
+        </Box>
         <ModalChoiceStoreHouse open={isOpenModalChoiceStoreHouse} close={onClose}></ModalChoiceStoreHouse>
       </Container>
     </>

@@ -63,6 +63,11 @@ const theme = createTheme({
         fontWeight: "700",
         fontFamily: "Nunito Sans, Sans Serif",
       },
+      text20Bold : {
+        fontSize: "20px",
+        fontWeight: "700",
+        fontFamily: "Nunito Sans, Sans Serif",
+      },
 },
   palette: {
     primary: {

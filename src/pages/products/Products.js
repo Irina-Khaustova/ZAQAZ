@@ -82,13 +82,13 @@ function Products() {
     console.log(name);
     setFilter((prevFilter) => {
       const updatedFilter = { ...prevFilter, [name]: value };
-      console.log(updatedFilter);
+      console.log(4848, updatedFilter);
       return updatedFilter;
     });
   };
 
   const onSubmit = () => {
-    console.log(22, filter);
+    console.log(4545, filter.search);
     let nUrl = `filter?size=8`
       .concat(currentPage ? `&page=${currentPage}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
@@ -124,6 +124,7 @@ function Products() {
       search: "",
       size: 6,
     });
+    setCurrentPage(0);
   };
 
   // переключение между страницами
@@ -441,7 +442,7 @@ function Products() {
                 <Typography>Loading...</Typography>
               ) : dataDraw ? (
                 dataDraw?.content.map((el, index) => (
-                  <Suspense fallback={<div>Загрузка...</div>}>
+                  <Suspense key={index} fallback={<div>Загрузка...</div>}>
                   <LazyProductItem
                     key={`${el.id}-${index}`}
                     id={el.id}

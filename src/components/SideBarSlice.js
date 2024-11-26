@@ -9,6 +9,7 @@ name: "sideBar",
 initialState,
 reducers: {
 putStoreHouse: (state, action) => {
+  console.log(333, action.payload)
 state.storeHouse = action.payload;
 },
 },

@@ -22,6 +22,7 @@ import {
 )(({ noBorder }) => ({
   borderRadius: "16px",
   "& .MuiOutlinedInput-root": {
+    overflow: "hidden",
     borderRadius: "16px",
     "& fieldset": {
       border: noBorder ? "none" : "1px solid #EBEBEB", 

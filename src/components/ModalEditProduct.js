@@ -111,7 +111,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
       productCode: data.extId,
       price: data.price,
       quantity: data.quantity,
-      productType: data.type.name,
+      productType: data.type?.name,
       images: images,
       productDescription: data.description,
       technicalSpecifications: {
@@ -147,7 +147,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
         active: data.active,
         technicalSpecifications: inputValues.technicalSpecifications,
         type: {
-            id: data.type.id,
+            id: data.type?.id,
             name: inputValues.productType,
         },
         quantity: inputValues.quantity

@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import CategoryItem from "../category/components/CategoryItem.js";
 import ModalAdd from "../category/components/ModalAdd.js";
 import ModalEdit from "../category/components/ModalEdit.js";
+import { putSubcategory } from "./subcategorySlice.js";
+import { useDispatch } from "react-redux";
 
 function SubCategory() {
   // eslint-disable-next-line
@@ -20,6 +22,7 @@ function SubCategory() {
   const [url, setUrl] = useState("");
 
   const {id} = useParams();
+  const dispatch = useDispatch();
   
   // параметры для фильтрации
   const [searchValue, setSearchValue] = useState();
@@ -56,6 +59,11 @@ const handleRefetch = () => {
 
 const handleToggleModalEdit = (e) => {
   setIsModalEdit((prev) => !prev);
+};
+
+const handlePutSubcategory = (subcategory) => {
+  console.log('what?')
+  dispatch(putSubcategory(subcategory));
 };
   
   // обработчик клика кнопки Выполнить -- формирование url для запроса
@@ -192,6 +200,7 @@ console.log(data)
                   isModalAdd={isModalAdd}
                   isModalEdit={isModalEdit}
                   categoryType={"SubCategory"}
+                  putSubcategory={() => handlePutSubcategory(el)}
                   />
                 ))
               )}

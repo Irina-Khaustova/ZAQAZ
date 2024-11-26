@@ -71,6 +71,10 @@ function Category() {
     setIsModalAdd((prev) => !prev);
   };
 
+  const handleCloseModalAdd = () => {
+    setIsModalAdd(false)
+  }
+
   const handlePutCategory = (category) => {
     // let newId = +id;
     // let filter = dataCategory?.filter((el) => el.id === newId);
@@ -95,6 +99,7 @@ function Category() {
   }
 
   const handleDeleteCategory = (id) => {
+    console.log(id)
     deleteCategory(id)
   };
 
@@ -175,7 +180,7 @@ function Category() {
                     + Создать категорию
                   </Button>
                   <ModalAdd
-                    close={handleToggleModalAdd}
+                    close={handleCloseModalAdd}
                     open={isModalAdd}
                     modalCategory="Создание категории"
                     refetch={handleRefetch}
@@ -236,6 +241,7 @@ function Category() {
                   name="edit"
                   refetch={handleRefetch}
                   categoryType={"Category"}
+                  deleteCategory={handleDeleteCategory}
                   // value={categoryName}
                 />
               )}

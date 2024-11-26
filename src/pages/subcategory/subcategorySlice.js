@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  subcategoryName: null,
+  subcategory: null,
   
 };
 
@@ -9,14 +9,15 @@ export const subcategorySlice = createSlice({
   name: "subcategory",
   initialState,
    reducers: {
-   putSubcategoryName: (state, action) => {
-      state.subcategoryName = action.payload;
+   putSubcategory: (state, action) => {
+    console.log(action.payload)
+      state.subcategory = action.payload;
          },
 },
 });
 
 export const {
-  putSubcategoryName,
+  putSubcategory,
 } = subcategorySlice.actions;
  export const subcategory = (state) => state.subcategorySlice;
  export default subcategorySlice.reducer;

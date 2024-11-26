@@ -34,14 +34,14 @@ function ProductItem({
           if (!response.ok) {
             throw new Error(`Failed to fetch image for ${id}`);
           }
-          console.log(1111, response)
+          
           const blob = await response.blob();
           const imageUrl = URL.createObjectURL(blob);
           loadedImages.push({ id, imageUrl });
         } catch (error) {
           loadedImages.push({ id, error: true });
         }
-        console.log(loadedImages)
+        
       }
       setDrawImages(loadedImages); 
     };
@@ -127,7 +127,7 @@ function ProductItem({
 <div>
       {DrawImages.length > 0? DrawImages.map((image, index) => {
         if (image.error) {
-          return <p key={index}>Error loading image for product {image.id}</p>;
+          return <p key={`${index}-${image.id}`}>Error loading image for product {image.id}</p>;
         }
 
         // Определяем стиль для видимости изображения в зависимости от currentPage
@@ -142,7 +142,7 @@ function ProductItem({
 
         return (
           <img 
-            key={index} 
+            key={`${index}-${image.id}`} 
             src={image.imageUrl} 
             alt={`Product ${image.id}`} 
             style={imageStyle}

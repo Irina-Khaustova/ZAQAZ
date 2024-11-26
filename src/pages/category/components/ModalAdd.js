@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { ReactComponent as MyIconCamera } from "../../../image/icon-camera.svg";
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
-import { usePostCategoryMutation } from "../../../api/Api";
+import { usePostCategoryMutation, usePostCategoryImageMutation } from "../../../api/Api";
 import RequestProgressModal from "../../../components/RequestProgressModal";
 
 const ModalAdd = ({ open, close, modalCategory, refetch }) => {
@@ -24,9 +24,11 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   });
   const [errorText, setErrorText] = useState("");
   const [postCategory,{ error: postCategoryError, isLoading: isLoadingError, isSuccess: isSuccessPostCategory }] = usePostCategoryMutation();
+  const [postCategoryImage, {error: postCategoryImageError, isLoading: isLoadingCategoryImageError, isSuccess: isSuccessPostCategoryImage}] = usePostCategoryImageMutation()
   const { category } = useSelector((state) => state.category);
   const [imageSelect, setImageSelect] = useState(null);
   const [error, setError] = useState(false);
+  const [imageToSend, setImageToSend] = useState(null);
   const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
 
   const maxSizeMb = 60 * 1024 * 1024;
@@ -38,6 +40,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
       setError(false);
       setErrorText("");
       setInputValue("");
+      setImageSelect(null)
     }
   }, [open]);
 
@@ -59,6 +62,18 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
       close();
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const onSigninSubmitCategoryImage = async () => {
+    setisOpenRequestProgressModal(true);
+    close()
+    try {
+      await postCategoryImage({image: imageToSend, id: category.id}).unwrap();
+      refetch();
+      close();
+    } catch (err) {
+      console.log(3333, err);
     }
   };
 
@@ -92,6 +107,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     } else {
       if (modalCategory === "Создание категории") {
         onSigninSubmitCategory();
+        onSigninSubmitCategoryImage();
       } else {
         onSigninSubmitSubCategory();
       }
@@ -99,36 +115,49 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   };
 
   const onHandleAddPhoto = (e) => {
-    console.log(imageSelect);
-    console.log(111, e.target.files[0], e.currentTarget, 111);
     const file = e.target.files[0];
-    if (!file) return;
+    if (file) {
+        const image = new Image();
+        image.src = URL.createObjectURL(file);
+        image.onload = () => {
+            if (image.width > maxSizeMb) {
+                setErrorText("Размер изображения должен быть 2х2");
+                setImageSelect(null);
+            } else {
+                setErrorText("");
+                setImageSelect(image.src);
+                // Если вам нужно отправить изображение на сервер, используйте FormData
+                convertToBase64(file).then(base64 => {
+                  setImageToSend({
+                      id: 0,
+                      fileBase64: base64,
+                      imagePath: file.name, // или другой путь, если необходимо
+                      isFirst: true,
+                  });
 
-    if (file.size > maxSizeMb) {
-      // setErrorText("Файл должен быть не больше 60 МБ");
-      
-      alert("Файл должен быть не больше 60 МБ");
-      setImageSelect(null);
-      return;
+                console.log(999, imageToSend)
+                  // Отправка данных на сервер
+                  
+              });
+                // Отправка изображения на сервер
+                // dispatch(uploadImage(formData)); // Пример действия для загрузки изображения
+            }
+        };
     }
+};
 
-    const image = new Image();
-    image.src = URL.createObjectURL(file);
-    image.onload = () => {
-      if (image.width !== maxWidth || image.height !== maxHeight) {
-        // setErrorText("Размер изображения должен быть 2х2");
-        alert("Размер изображения должен быть 2х2");
-        setImageSelect(null);
-      } else {
-        setErrorText("");
-        setImageSelect(image.src);
-        alert("good");
-      }
-    };
-    console.log()
-  }
+const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+          resolve(reader.result.split(',')[1]); // Извлекаем только часть после "data:image/png;base64,"
+      };
+      reader.onerror = reject;
+  });
+};
 
-  console.log(imageSelect);
+  // console.log(imageSelect);
 
   const handleInputChange = (e) => {
     setError(false);
@@ -226,8 +255,8 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
                 src={imageSelect}
                 alt="Uploaded"
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  width: "96px",
+                  height: "96px",
                   borderRadius: "8px",
                   objectFit: "cover",
                 }}
@@ -273,6 +302,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
               Не должно превышать <strong>60 мб</strong>, размер
               <strong> 2х2</strong>
             </Typography>
+            
             <Button
               type="submit"
               fullWidth

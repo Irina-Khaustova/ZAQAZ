@@ -52,7 +52,7 @@ export const Api = createApi({
         return {
           url: `v1/store/category/item`,
           method: "PUT",
-          body: JSON.stringify(body)
+          body,
         };
       },
     }),
@@ -82,8 +82,28 @@ export const Api = createApi({
         const {image, id} = data;
         return {
           url: `v1/store/category/${id}/image`,
-          method: "PATCH",
-          body: image
+          method: "POST",
+          body: image.imagePath
+        };
+      },
+    }),
+    postStoreHouse: builder.mutation({
+      query(body) {
+        console.log(body);
+        return {
+          url: `v1/store`,
+          method: "POST",
+          body,
+        };
+      },
+    }),
+    putStoreHouse: builder.mutation({
+      query(body) {
+        console.log(body);
+        return {
+          url: `v1/store`,
+          method: "PUT",
+          body,
         };
       },
     }),
@@ -118,6 +138,10 @@ export const Api = createApi({
     }),
     getStoreHouses: builder.query({
       query: () => `v1/store`,
+      refetchOnMountOrArgChange: true,
+    }),
+    getStoreHouse: builder.query({
+      query: (id) => `v1/store/${id}`,
     }),
    
     deleteProduct: builder.mutation({
@@ -161,5 +185,9 @@ export const {
   useDeleteCategoryMutation,
   useGetPictureQuery,
   getPicture,
-  useGetStoreHousesQuery
+  useGetStoreHousesQuery,
+  usePostStoreHouseMutation,
+  useGetStoreHouseQuery,
+  usePutStoreHouseMutation,
+  usePostCategoryImageMutation
 } = Api;

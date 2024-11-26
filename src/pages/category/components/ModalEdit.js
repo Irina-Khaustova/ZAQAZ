@@ -15,24 +15,36 @@ import { ReactComponent as MyIconCamera } from "../../../image/icon-camera.svg";
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
 import { useSelector } from "react-redux";
 import { usePutCategoryMutation } from "../../../api/Api";
+import CustomTextField from "../../../components/CustomTextField";
 // import RequestProgressModal from "../../../components/RequestProgressModal";
 
 const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }) => {
   // eslint-disable-next-line
-  const [isDisabledDelete, setIsDisabledDelete] = useState(true);
+  // const [isDisabledDelete, setIsDisabledDelete] = useState(true);
   const [inputValue, setInputValue] = useState({
     name: "",
     nameEn: ""
   });
   const [errorText, setErrorText] = useState("");
   const [error, setError] = useState(false);
+  const [imageSelect, setImageSelect] = useState(null);
   // const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
   const { category } = useSelector((state) => state.category);
+  const {subcategory} = useSelector((state) => state.subcategory);
+
+  const maxSizeMb = 60 * 1024 * 1024;
+  const maxWidth = 2000;
+  const maxHeight = 2000;
 
   useEffect(() => {
     console.log(category.nameEn)
     setInputValue({name: category?.name, nameEn: category?.nameEn});
   }, [category]);
+
+  useEffect(() => {
+    console.log("subcategory:", subcategory)
+    setInputValue({name: subcategory?.name, nameEn: subcategory?.nameEn});
+  }, [subcategory]);
 
 
 
@@ -60,7 +72,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
     try {
       await putCategory({
         parentId: category.id,
-        id: category.id,
+        id: subcategory.id,
         name: inputValue.name,
         nameEn: inputValue.nameEn,
         store: {
@@ -90,7 +102,9 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
   };
 
   const onhandleClickDelete = () => {
-    deleteCategory()
+    deleteCategory(category.id);
+    refetch();
+    close()
   }
 
   const handleInputChange = (e) => {
@@ -101,6 +115,33 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
       [e.target.name]: e.target.value,
     }));
   }
+
+  const onHandleAddPhoto = (e) => {
+    const file = e.target.files[0];
+    console.log(file)
+    if (file) {
+        const image = new Image();
+        image.src = URL.createObjectURL(file);
+        console.log(image.src)
+        image.onload = () => {
+            if (image.size > maxSizeMb) {
+                setErrorText("Размер изображения должен быть 2х2");
+                setImageSelect(null);
+                console.log(" yes")
+            } else {
+                setErrorText("");
+                setImageSelect(image.src);
+                console.log(2222, imageSelect)
+                // Если вам нужно отправить изображение на сервер, используйте FormData
+                const formData = new FormData();
+                formData.append('image', file);
+
+                // Отправка изображения на сервер
+                // dispatch(uploadImage(formData)); // Пример действия для загрузки изображения
+            }
+        };
+    }
+};
 
   return ( 
     <>
@@ -174,9 +215,33 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
             marginTop: "0px",
           }}
         >
-          <Box sx={{ marginTop: "0px" }}>
-            <MyIconCamera />
-          </Box>
+           <Box
+                component="label"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+              >
+                {!imageSelect && <MyIconCamera sx={{ width: "96px", height: "96px" }} />}
+                {imageSelect && (
+                <div>
+                    <img src={imageSelect} alt="Uploaded" style={{ width: '96px', height: '96px' }} />
+                </div>
+            )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onHandleAddPhoto}
+                  style={{
+                    opacity: 0,
+                    position: "absolute",
+                    width: "1px",
+                    height: "1px",
+                    zIndex: -1,
+                  }}
+                />
+              </Box>
           <Box
             sx={{
               marginLeft: "35px",
@@ -193,6 +258,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
               Не должно превышать <strong>60 мб</strong>,{" "}
               <strong>размер 2х2</strong>
             </Typography>
+            
             <Button
               type="submit"
               fullWidth
@@ -306,26 +372,34 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
         }}
       >
         <Button
+        onClick={onhandleClickDelete}
           type="submit"
           fullWidth
           variant="contained"
           color="secondary"
-          disabled={isDisabledDelete}
-          onClick={onhandleClickDelete}
+          boxshadow="none"
+          // disabled={isDisabledDelete}
+         
           sx={{
             height: "56px",
             border: "1px solid rgba(246, 248, 249, 1)",
             borderRadius: "16px",
             marginBottom: "5px",
             textTransform: "none",
-            boxshadow: "none",
-            "&.Mui-disabled": {
-              backgroundColor: "#F6F8F9",
-              color: "gray",
+            boxShadow: "none",
+            // "&.Mui-disabled": {
+            //   backgroundColor: "#F6F8F9",
+            //   color: "gray",
+            // },
+           
+            "&:hover": {
+              boxShadow: "none",
             },
-            "&.hover": {
-              backgroundColor: "rgba(246, 248, 249, 1)",
-              color: "gray",
+            "&:active": {
+              boxShadow: "none",
+            },
+            "&:focus": {
+              boxShadow: "none",
             },
           }}
         >
@@ -333,11 +407,12 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
         </Button>
 
         <Button
+        onClick={onhandleClick}
           type="submit"
           fullWidth
           variant="contained"
           color="secondary"
-          onClick={onhandleClick}
+          
           boxshadow="none"
           sx={{
             height: "56px",
@@ -348,6 +423,15 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
             textTransform: "none",
             boxShadow: "none",
             marginBottom: "37px",
+            "&:hover": {
+              boxShadow: "none",
+            },
+            "&:active": {
+              boxShadow: "none",
+            },
+            "&:focus": {
+              boxShadow: "none",
+            },
           }}
         >
           <Typography variant="text16Bold">Сохранить</Typography>

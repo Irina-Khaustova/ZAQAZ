@@ -122,7 +122,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
       "quantity": inputValues.quantity,
       "type": {
         id: 3,
-        name: "Type of item test"
+        name: inputValues.productType
       }
   }
   try {
