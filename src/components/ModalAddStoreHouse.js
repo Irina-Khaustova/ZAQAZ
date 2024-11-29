@@ -185,6 +185,10 @@ const ModalAddStoreHouse = ({
 
   const handleClickButtonRepeat = () => {};
 
+  const closeModalDelete = () => {
+    setIsOpenModalDelete(false)
+  }
+
   const onHandleDelete = async () => {
     console.log('удаление')
     try {
@@ -409,6 +413,7 @@ const ModalAddStoreHouse = ({
       ></RequestProgressModal>
         {isOpenModalDelete && <ModalDelete
               open={isOpenModalDelete}
+              close={closeModalDelete}
               onhandleClickDelete={onHandleDelete}
               name="склад"
             ></ModalDelete>}

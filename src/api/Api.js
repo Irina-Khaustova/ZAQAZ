@@ -135,6 +135,11 @@ export const Api = createApi({
         responseHandler: (res) => res.blob(),
       }),
       transformResponse: (res) => URL.createObjectURL(res),
+    
+    
+    
+    
+    
     }),
     getStoreHouses: builder.query({
       query: () => 'v1/store',
