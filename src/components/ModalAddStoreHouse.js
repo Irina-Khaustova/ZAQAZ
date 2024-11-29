@@ -21,6 +21,7 @@ import RequestProgressModal from "../components/RequestProgressModal";
 import CustomTextField from "./CustomTextField";
 import { DatasetRounded } from "@mui/icons-material";
 import ModalDelete from "./ModalDelete";
+import { useLazyGetStoreHouseQuery } from "../api/Api";
 
 const ModalAddStoreHouse = ({
   open,
@@ -38,6 +39,7 @@ const ModalAddStoreHouse = ({
     city: "",
   });
   const [itemId, setItemId] = useState('');
+  const [storeId, setStoreId] = useState(null);
   const [errorText, setErrorText] = useState("");
   const [
     postStoreHouse,
@@ -56,35 +58,43 @@ const ModalAddStoreHouse = ({
   const [
     deleteStoreHouse,
     { error: errorDelete, isLoading: isLoadingDeleteError, isSuccess: isSuccessDelete },
-  ] = useDeleteStoreHouseMutation(id); 
+  ] = useDeleteStoreHouseMutation(); 
 
   const [error, setError] = useState(false);
   const [isOpenRequestProgressModal, setisOpenRequestProgressModal] =
     useState(false);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
-  const [storeId, setStoreId] = useState(null);
+ 
   const [flag, setFlag] = useState(false);
 
-  const { data } = useGetStoreHouseQuery(storeId, {
-    skip: storeId == null || storeId === "",
-  });
+  const handleFetch = () => {
+    if (storeId) {
+      triggerGetStoreHouse(storeId);
+    }
+  }
+
+  const [triggerGetStoreHouse, { data, isLoadingGet, errorGet }] = useLazyGetStoreHouseQuery();
+
+  
 
   useEffect(() => {
-    console.log("dataadrawItem", dataDrawItem);
-  }, [dataDrawItem, open]);
+    if (open && id && type === "edit") {
+      triggerGetStoreHouse(id); // Используйте переданный ID напрямую
+    }
+  }, [open, id, type]);
 
   useEffect(() => {
-    setStoreId(dataDrawItem?.id)
-    console.log(888, dataDrawItem);
+    setStoreId(data?.id)
+    console.log(888, data);
     if (open && type === "edit") {
       setError(false);
-      setItemId(dataDrawItem?.id)
+      setItemId(data?.id)
       setErrorText("");
       setInputValue((prev) => ({
-        name: dataDrawItem?.title || "",
-        description: dataDrawItem?.description || "",
-        baseUrl: dataDrawItem?.baseUrl || "",
-        city: dataDrawItem?.city || "",
+        name: data?.title || "",
+        description: data?.description || "",
+        baseUrl: data?.baseUrl || "",
+        city: data?.city || "",
       }));
     } else if (open && type === "add") {
       setInputValue((prev) => ({
@@ -95,7 +105,7 @@ const ModalAddStoreHouse = ({
       }));
     }
     console.log("Значения инпутов", inputValue);
-  }, [open, dataDrawItem, type]);
+  }, [open, data, type]);
 
   const onPostStoreHouse = async () => {
     setisOpenRequestProgressModal(true);
@@ -120,7 +130,7 @@ const ModalAddStoreHouse = ({
     close();
     try {
       await putStoreHouse({
-        id: Number(dataDrawItem.id),
+        id: Number(data.id),
         title: inputValue.name,
         description: inputValue.description,
         color: "",
@@ -192,7 +202,7 @@ const ModalAddStoreHouse = ({
   const onHandleDelete = async () => {
     console.log('удаление')
     try {
-      await deleteStoreHouse(itemId).unwrap(); // Вызываем мутацию удаления
+      await deleteStoreHouse(storeId).unwrap(); // Вызываем мутацию удаления
       console.log('success')
       setIsOpenModalDelete(false); // Закрываем модальное окно подтверждения
       close();

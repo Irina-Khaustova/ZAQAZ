@@ -217,5 +217,6 @@ export const {
   useGetStoreHouseQuery,
   usePutStoreHouseMutation,
   usePostCategoryImageMutation,
-  useDeleteStoreHouseMutation
+  useDeleteStoreHouseMutation,
+  useLazyGetStoreHouseQuery
 } = Api;

@@ -37,6 +37,7 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
   const [choiceId, setChoiceId] = useState(null);
   const [dataDrawItem, setdataDrawItem] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [idEdit, setIdEdit] = useState(null);
   const [dataDrawStoreHouses, setDataDrawStoreHouses] = useState()
 
   
@@ -47,9 +48,9 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
   // ];
 
   const {data, refetch: refetchStoreHouses } = useGetStoreHousesQuery();
-  const {data: data1, refetch} = useGetStoreHouseQuery(choiceId, {
-    slip: !choiceId
-  })
+  // const {data: data1, refetch} = useGetStoreHouseQuery(choiceId, {
+  //   slip: !choiceId 
+  // })
   const dispatch = useDispatch();
 
   
@@ -68,7 +69,7 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
       setdataDrawItem(null); // Сброс состояния при ошибке
     } finally {
       setIsSubmitting(false);
-      refetch();
+      // refetch();
       close();
     }
   };
@@ -109,31 +110,32 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
 
   const onGoToStoreHouse = async (id) => {
     // Сначала очищаем данные
+    console.log("id", id)
     setdataDrawItem(null);
-  
+    setIdEdit(id)
     // Затем устанавливаем ID и тип модального окна
     setChoiceId(id);
     setTypeModal('edit');
   
-    try {
+    // try {
       // Выполняем запрос
-      const response = await refetch(id);
+      // const response = await refetch(id);
       
-      // Проверяем наличие ошибок в ответе
-      if (response.error) {
-        throw new Error(response.error);
-      }
+      // // Проверяем наличие ошибок в ответе
+      // if (response.error) {
+      //   throw new Error(response.error);
+      // }
   
-      // Устанавливаем данные после успешного запроса
-      setdataDrawItem(response.data); // Предполагаем, что данные находятся в response.data
-      console.log("успех");
+      // // Устанавливаем данные после успешного запроса
+      // setdataDrawItem(response.data); // Предполагаем, что данные находятся в response.data
+      // console.log("успех");
       
-      // Открываем модальное окно
+      // // Открываем модальное окно
       setisOpenAddStoreHouseModal(true);
-    } catch (error) {
-      console.error("Ошибка при получении данных:", error);
-      alert("Не удалось получить данные. Пожалуйста, попробуйте снова.");
-    }
+    // } catch (error) {
+    //   console.error("Ошибка при получении данных:", error);
+    //   alert("Не удалось получить данные. Пожалуйста, попробуйте снова.");
+    // }
   };
 
   const onhandleClickGoToAdd = () => {
@@ -141,11 +143,11 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
     setTypeModal("add");
   };
 
-  useEffect(() => {
-    if (data1) {
-      setdataDrawItem(data1)
-    }
-  }, [data1, refetch]);
+  // useEffect(() => {
+  //   if (data1) {
+  //     setdataDrawItem(data1)
+  //   }
+  // }, [data1, refetch]);
 
   useEffect(() => {
     if (data) {
@@ -153,6 +155,9 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
     }
   }, [data, refetchStoreHouses]);
 
+  useEffect(() => {
+    console.log(idEdit)
+  }, [idEdit]);
 
   useEffect(() => {
   refetchStoreHouses();
@@ -433,9 +438,10 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
       <ModalAddStoreHouse
         open={isOpenAddStoreHouseModal}
         close={handleExitModalRequest}
-      
+        id={idEdit}
         type={typeModal}
-        dataDrawItem={dataDrawItem}
+        refetch={refetchStoreHouses}
+        // dataDrawItem={dataDrawItem}
       ></ModalAddStoreHouse>
     </>
   );
