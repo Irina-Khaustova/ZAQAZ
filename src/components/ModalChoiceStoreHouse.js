@@ -47,7 +47,9 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
   // ];
 
   const {data, refetch: refetchStoreHouses } = useGetStoreHousesQuery();
-  const {data: data1, refetch} = useGetStoreHouseQuery(choiceId)
+  const {data: data1, refetch} = useGetStoreHouseQuery(choiceId, {
+    slip: !choiceId
+  })
   const dispatch = useDispatch();
 
   
@@ -110,7 +112,7 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
     setdataDrawItem(null);
   
     // Затем устанавливаем ID и тип модального окна
-    // setChoiceId(id);
+    setChoiceId(id);
     setTypeModal('edit');
   
     try {
@@ -431,7 +433,7 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
       <ModalAddStoreHouse
         open={isOpenAddStoreHouseModal}
         close={handleExitModalRequest}
-        
+      
         type={typeModal}
         dataDrawItem={dataDrawItem}
       ></ModalAddStoreHouse>

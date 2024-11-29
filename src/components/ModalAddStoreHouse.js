@@ -63,9 +63,10 @@ const ModalAddStoreHouse = ({
     useState(false);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [storeId, setStoreId] = useState(null);
+  const [flag, setFlag] = useState(false);
 
   const { data } = useGetStoreHouseQuery(storeId, {
-    skip: !storeId ||  storeId === undefined,
+    skip: storeId == null || storeId === "",
   });
 
   useEffect(() => {
@@ -94,7 +95,7 @@ const ModalAddStoreHouse = ({
       }));
     }
     console.log("Значения инпутов", inputValue);
-  }, [open, dataDrawItem]);
+  }, [open, dataDrawItem, type]);
 
   const onPostStoreHouse = async () => {
     setisOpenRequestProgressModal(true);
