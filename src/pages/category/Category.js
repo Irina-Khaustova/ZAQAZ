@@ -7,7 +7,7 @@ import CategoryItem from "./components/CategoryItem.js";
 import ModalEdit from "./components/ModalEdit.js";
 import { useGetCategoryWithSubcategoryQuery } from "../../api/Api.js";
 import ModalAdd from "./components/ModalAdd.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { putcategory } from "./categorySlice.js";
 import { useDeleteCategoryMutation } from "../../api/Api.js";
 import RequestProgressModal from "../../components/RequestProgressModal.js";
@@ -17,16 +17,18 @@ function Category() {
   const [isModalEdit, setIsModalEdit] = useState(false);
   const [dataCategory, setDataCategory] = useState([]);
   const [url, setUrl] = useState("");
+  const [id, setId] = useState(process.env.REACT_APP_STORE_ID)
   const [isOpenRequestProgressModal, setisOpenRequestProgressModal] =
     useState(false);
 
   const timeoutRef = useRef(null);
   const dispatch = useDispatch();
-
+  const {storeHouse} = useSelector(state => state.sideBar);
+  console.log(666666666, storeHouse)
   const [searchValue, setSearchValue] = useState("");
   // const { data, error, isLoading } = useGetCategoryQuery(url);
   const { data, error, isLoading, refetch } =
-    useGetCategoryWithSubcategoryQuery({ id: 26, url: url });
+    useGetCategoryWithSubcategoryQuery({ id: id, url: url });
   const [
     deleteCategory,
     { isLoading: isDeleting, error: deleteError, isSuccess: isSuccessDelete },
@@ -38,6 +40,7 @@ function Category() {
   }, [dispatch]);
 
   useEffect(() => {
+    console.log(666666666, storeHouse)
     if (data) {
       if (searchValue === "") {
         setDataCategory(data.content);
@@ -54,7 +57,18 @@ function Category() {
 
   useState(() => { 
     setUrl("page=0&size=500");
+    
   }, []);
+
+  useEffect(() => {
+
+    console.log(3333, storeHouse?.id)
+    if(storeHouse?.id) {
+      setId(storeHouse.id)
+    }
+  console.log(storeHouse?.id)
+ 
+  },[storeHouse])
 
   // обработчик полей фильтра
   const onSearchChange = (e) => {
@@ -124,7 +138,7 @@ function Category() {
             sx={{
               backgroundColor: "rgba(246, 248, 249, 1)",
               padding: "37px",
-              // height: "100%",
+              minHeight: "82%",
               marginTop: "64px",
             }}
           >
@@ -234,6 +248,14 @@ function Category() {
                   />
                 ))
               ) : null}
+              {dataCategory && dataCategory.length === 0 ? (
+  <Box sx={{  width: "405px", height: "110px", margin: "auto", marginTop: "15%" }}>
+    <Box sx={{textAlign: "center", display: "flex", flexDirection: 'column'}}>
+      <Typography variant="text28Bold" sx={{marginBottom: "8px"}}> На этом складе нет категорий</Typography>
+      <Typography variant="text16Light"> Добавьте категории  чтобы они появились здесь</Typography>
+    </Box>
+  </Box>
+) : null}
               {isModalEdit && (
                 <ModalEdit
                   close={handleToggleModalEdit}

@@ -24,8 +24,6 @@ function CategoryItem({
   const [isShowEllipsis, setIsShowEllipsis] = useState(false);
   const containerRef = useRef(null);
 
-  console.log("images", images, "image", image)
-
   useEffect(() => {
     if (subcategory) {
       let str = subcategory.map((el) => el.name).join('\n')

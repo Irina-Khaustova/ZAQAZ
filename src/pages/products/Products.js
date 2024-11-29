@@ -46,8 +46,9 @@ function Products() {
 
   useEffect(() => {
     setTotalPages(data ? data.page.totalPages : null);
-    setCurrentPage(data?.page.number);
-    setDataDraw(data);
+    const page = Number(data?.page?.number) + 1;
+    setCurrentPage(data?.page?.number +1);
+    setDataDraw(data); 
     console.log(data?.page.totalPages);
   }, [data]);
 
@@ -90,7 +91,9 @@ function Products() {
   const onSubmit = () => {
     console.log(4545, filter.search);
     let nUrl = `filter?size=8`
-      .concat(currentPage ? `&page=${currentPage}` : "")
+    // .concat(currentPage === 0 || 1? `&page=${currentPage}` : "")
+    .concat(currentPage === 0? `&page=${currentPage}` : "")
+      .concat(currentPage ? `&page=${currentPage - 1}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
       .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
       .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")

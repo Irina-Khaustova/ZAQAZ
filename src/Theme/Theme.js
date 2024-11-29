@@ -68,6 +68,11 @@ const theme = createTheme({
         fontWeight: "700",
         fontFamily: "Nunito Sans, Sans Serif",
       },
+      text14Medium : {
+        fontSize: "14px",
+        fontWeight: "500",
+        fontFamily: "Nunito Sans, Sans Serif",
+      },
 },
   palette: {
     primary: {

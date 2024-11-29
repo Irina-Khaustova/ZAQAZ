@@ -83,7 +83,7 @@ export const Api = createApi({
         return {
           url: `v1/store/category/${id}/image`,
           method: "POST",
-          body: image.imagePath
+          body: image
         };
       },
     }),
@@ -137,8 +137,20 @@ export const Api = createApi({
       transformResponse: (res) => URL.createObjectURL(res),
     }),
     getStoreHouses: builder.query({
-      query: () => `v1/store`,
+      query: () => 'v1/store',
       refetchOnMountOrArgChange: true,
+      providesTags: (result) => {
+        // Проверяем, что result является массивом
+        if (Array.isArray(result)) {
+          return [
+            ...result.map(({ id }) => ({ type: 'storeHouses', id })),
+            { type: 'storeHouses', id: 'LIST' }
+          ];
+        } else {
+          // Если result не массив, возвращаем только тег для списка
+          return [{ type: 'storeHouses', id: 'LIST' }];
+        }
+      },
     }),
     getStoreHouse: builder.query({
       query: (id) => `v1/store/${id}`,
@@ -163,6 +175,16 @@ export const Api = createApi({
       },
       // Invalidates all queries that subscribe to this Post `id` only.
       invalidatesTags: (result, error, id) => [{ type: 'Posts', id }],
+    }),
+    deleteStoreHouse: builder.mutation({
+      query(id) {
+        return {
+          url: `v1/store/${id}`,
+          method: 'DELETE',
+        }
+      },
+      // Invalidates all queries that subscribe to this Post `id` only.
+      invalidatesTags: (result, error, id) => [{ type: 'storeHouses', id }],
     }),
   }),
 });
@@ -189,5 +211,6 @@ export const {
   usePostStoreHouseMutation,
   useGetStoreHouseQuery,
   usePutStoreHouseMutation,
-  usePostCategoryImageMutation
+  usePostCategoryImageMutation,
+  useDeleteStoreHouseMutation
 } = Api;

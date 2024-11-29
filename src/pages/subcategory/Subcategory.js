@@ -20,10 +20,11 @@ function SubCategory() {
   const [isModalEdit, setIsModalEdit] = useState(false);
   const [subcategory, setSubcategory] = useState('');
   const [url, setUrl] = useState("");
+  
 
   const {id} = useParams();
   const dispatch = useDispatch();
-  
+  const {storeHouse} = useSelector(state => state.sideBar)
   // параметры для фильтрации
   const [searchValue, setSearchValue] = useState();
 
@@ -204,6 +205,14 @@ console.log(data)
                   />
                 ))
               )}
+               {data && data.length === 0 ? (
+  <Box sx={{  width: "405px", height: "110px", margin: "auto", marginTop: "15%" }}>
+    <Box sx={{textAlign: "center", display: "flex", flexDirection: 'column'}}>
+      <Typography variant="text28Bold" sx={{marginBottom: "8px"}}> В этой категории нет подкатегорий</Typography>
+      <Typography variant="text16Light"> Добавьте подкатегорию  чтобы они появились здесь</Typography>
+    </Box>
+  </Box>
+) : null}
             </Box>
             {isModalEdit && (
                 <ModalEdit

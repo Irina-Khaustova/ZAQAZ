@@ -11,18 +11,33 @@ import {
   IconButton,
 } from "@mui/material";
 import { ReactComponent as MyIconExit } from "../image/icon-exit.svg";
-import { useGetStoreHouseQuery, usePostStoreHouseMutation, usePutStoreHouseMutation } from "../api/Api";
+import {
+  useGetStoreHouseQuery,
+  usePostStoreHouseMutation,
+  usePutStoreHouseMutation,
+  useDeleteStoreHouseMutation,
+} from "../api/Api";
 import RequestProgressModal from "../components/RequestProgressModal";
 import CustomTextField from "./CustomTextField";
 import { DatasetRounded } from "@mui/icons-material";
+import ModalDelete from "./ModalDelete";
 
-const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dataDrawItem }) => {
+const ModalAddStoreHouse = ({
+  open,
+  close,
+  modalCategory,
+  refetch,
+  type,
+  id,
+  dataDrawItem,
+}) => {
   const [inputValue, setInputValue] = useState({
     name: "",
     description: "",
     baseUrl: "",
     city: "",
   });
+  const [itemId, setItemId] = useState('');
   const [errorText, setErrorText] = useState("");
   const [
     postStoreHouse,
@@ -35,60 +50,63 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
 
   const [
     putStoreHouse,
-    {
-      error: putError,
-      isLoading: isLoadingPutError,
-      isSuccess: isSuccessPut,
-    },
-
+    { error: putError, isLoading: isLoadingPutError, isSuccess: isSuccessPut },
   ] = usePutStoreHouseMutation();
+
+  const [
+    deleteStoreHouse,
+    { error: errorDelete, isLoading: isLoadingDeleteError, isSuccess: isSuccessDelete },
+  ] = useDeleteStoreHouseMutation(id); 
+
   const [error, setError] = useState(false);
   const [isOpenRequestProgressModal, setisOpenRequestProgressModal] =
     useState(false);
+  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const [storeId, setStoreId] = useState(null);
 
- 
-    const { data} = useGetStoreHouseQuery(id, {
-      skip: !id
-    });
+  const { data } = useGetStoreHouseQuery(storeId, {
+    skip: !storeId ||  storeId === undefined,
+  });
 
-    useEffect(() => {
-      console.log("dataadrawItem", dataDrawItem)
-    }, [dataDrawItem, open])
+  useEffect(() => {
+    console.log("dataadrawItem", dataDrawItem);
+  }, [dataDrawItem, open]);
 
-    useEffect(() => {
-      console.log(888, dataDrawItem)
-      if (open && type === "edit") {
-        setError(false);
-        setErrorText("");
-        setInputValue((prev) => ({
-          name: dataDrawItem?.title || "",
-          description: dataDrawItem?.description || "",
-          baseUrl: dataDrawItem?.baseUrl || "",
-          city: dataDrawItem?.city || "",
-        }));
-      } else if (open && type === "add") {
-        setInputValue((prev) => ({
-          name: "",
-          description: "",
-          baseUrl: "",
-          city: "",
-        }));
-      }
-    console.log("Значения инпутов", inputValue)
-    }, [open, dataDrawItem, type]);
-    
+  useEffect(() => {
+    setStoreId(dataDrawItem?.id)
+    console.log(888, dataDrawItem);
+    if (open && type === "edit") {
+      setError(false);
+      setItemId(dataDrawItem?.id)
+      setErrorText("");
+      setInputValue((prev) => ({
+        name: dataDrawItem?.title || "",
+        description: dataDrawItem?.description || "",
+        baseUrl: dataDrawItem?.baseUrl || "",
+        city: dataDrawItem?.city || "",
+      }));
+    } else if (open && type === "add") {
+      setInputValue((prev) => ({
+        name: "",
+        description: "",
+        baseUrl: "",
+        city: "",
+      }));
+    }
+    console.log("Значения инпутов", inputValue);
+  }, [open, dataDrawItem]);
 
   const onPostStoreHouse = async () => {
     setisOpenRequestProgressModal(true);
     close();
     try {
       await postStoreHouse({
-        "title": inputValue.name,
-        "description" : inputValue.description,
-        "color" : "",
-        "baseUrl" : inputValue.baseUrl,
-        "city" : inputValue.city
-    }).unwrap();
+        title: inputValue.name,
+        description: inputValue.description,
+        color: "",
+        baseUrl: inputValue.baseUrl,
+        city: inputValue.city,
+      }).unwrap();
       refetch();
       close();
     } catch (err) {
@@ -101,20 +119,20 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
     close();
     try {
       await putStoreHouse({
-        "id": Number(dataDrawItem.id),
-        "title": inputValue.name,
-        "description" : inputValue.description,
-        "color" : "",
-        "baseUrl" : inputValue.baseUrl,
-        "city" : inputValue.city
-    }).unwrap();
+        id: Number(dataDrawItem.id),
+        title: inputValue.name,
+        description: inputValue.description,
+        color: "",
+        baseUrl: inputValue.baseUrl,
+        city: inputValue.city,
+      }).unwrap();
       refetch();
       setInputValue({
         name: "",
         description: "",
         baseUrl: "",
         city: "",
-      })
+      });
       close();
     } catch (err) {
       console.log(err);
@@ -129,7 +147,7 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
       setErrorText("Введите название!");
       setError(true);
     } else {
-        onPostStoreHouse();
+      onPostStoreHouse();
     }
   };
 
@@ -141,7 +159,7 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
       setErrorText("Введите название!");
       setError(true);
     } else {
-        onPutStoreHouse();
+      onPutStoreHouse();
     }
   };
 
@@ -159,17 +177,36 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
     close();
   };
 
+  const onHandleClickDelete = () => {
+    setIsOpenModalDelete(true);
+    console.log(123456789)
+  };
+
   const handleClickButtonRepeat = () => {};
+
+  const onHandleDelete = async () => {
+    console.log('удаление')
+    try {
+      await deleteStoreHouse(itemId).unwrap(); // Вызываем мутацию удаления
+      console.log('success')
+      setIsOpenModalDelete(false); // Закрываем модальное окно подтверждения
+      close();
+      refetch(); // Обновляем данные после удаления
+      setIsOpenModalDelete(false); // Закрываем модальное окно подтверждения
+    } catch (error) {
+      console.error("Ошибка при удалении:", error);
+      // Здесь можно добавить обработку ошибки, например, уведомление пользователя
+    }
+  };
 
   return (
     <>
       {!isOpenRequestProgressModal && (
-        <Dialog
+         <Dialog
           open={open}
           onClose={close}
           maxWidth={false}
           fullWidth={true}
-         
           aria-labelledby="form-dialog-title"
           slotProps={{
             backdrop: {
@@ -219,13 +256,11 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
           </DialogTitle>
 
           <DialogContent
-         
             sx={{
               width: "440px",
               // minHeight: "250px",
               padding: "0",
               boxSizing: "border-box",
-              
             }}
           >
             <Box
@@ -235,54 +270,53 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
                 alignItems: "center",
                 marginTop: "0px",
               }}
-            >
-            </Box>
+            ></Box>
             <Typography sx={{ marginTop: "15px" }}>Название</Typography>
             <CustomTextField
-          margin="dense"
-          name="name"
-          type="text"
-          error={error.parentCategory}
-          helperText={errorText.parentCategory}
-          value={inputValue.name || ""}
-          onChange={handleInputChange}
-        />
+              margin="dense"
+              name="name"
+              type="text"
+              error={error.parentCategory}
+              helperText={errorText.parentCategory}
+              value={inputValue.name || ""}
+              onChange={handleInputChange}
+            />
             <Typography sx={{ marginTop: "15px" }}>Описание</Typography>
             <CustomTextField
-            margin="dense"
-            name="description"
-            type="text"
-            value={inputValue.description || ""}
-            multiline={true}
-            minRows={4}
-            onChange={handleInputChange}
-            sx={{
-              minHeight: "128px",
-              "& .MuiOutlinedInput-root": {
+              margin="dense"
+              name="description"
+              type="text"
+              value={inputValue.description || ""}
+              multiline={true}
+              minRows={4}
+              onChange={handleInputChange}
+              sx={{
                 minHeight: "128px",
-              },
-            }}
-          />
-        <Typography sx={{ marginTop: "15px" }}>baseUrl</Typography>
+                "& .MuiOutlinedInput-root": {
+                  minHeight: "128px",
+                },
+              }}
+            />
+            <Typography sx={{ marginTop: "15px" }}>baseUrl</Typography>
             <CustomTextField
-          margin="dense"
-          name="baseUrl"
-          type="text"
-          error={error.parentCategory}
-          helperText={errorText.parentCategory}
-          value={inputValue.baseUrl || ""}
-          onChange={handleInputChange}
-        />
-        <Typography sx={{ marginTop: "15px" }}>Город</Typography>
+              margin="dense"
+              name="baseUrl"
+              type="text"
+              error={error.parentCategory}
+              helperText={errorText.parentCategory}
+              value={inputValue.baseUrl || ""}
+              onChange={handleInputChange}
+            />
+            <Typography sx={{ marginTop: "15px" }}>Город</Typography>
             <CustomTextField
-          margin="dense"
-          name="city"
-          type="text"
-          error={error.parentCategory}
-          helperText={errorText.parentCategory}
-          value={inputValue.city || ""}
-          onChange={handleInputChange}
-        />
+              margin="dense"
+              name="city"
+              type="text"
+              error={error.parentCategory}
+              helperText={errorText.parentCategory}
+              value={inputValue.city || ""}
+              onChange={handleInputChange}
+            />
           </DialogContent>
 
           <DialogActions
@@ -300,7 +334,7 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
               variant="contained"
               color="secondary"
               boxshadow="none"
-              onClick={type ==="add"? onhandleClickAdd:  onhandleClickEdit}
+              onClick={type === "add" ? onhandleClickAdd : onhandleClickEdit}
               sx={{
                 height: "56px",
                 border: "1px solid rgba(246, 248, 249, 1)",
@@ -310,7 +344,7 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
                 textTransform: "none",
                 boxShadow: "none",
                 marginTop: "37px",
-                marginBottom: "40px",
+                marginBottom: type === "edit" ? "10px" : "40px",
                 "&:hover": {
                   boxShadow: "none",
                 },
@@ -322,19 +356,61 @@ const ModalAddStoreHouse = ({ open, close, modalCategory, refetch, type, id, dat
                 },
               }}
             >
-              <Typography variant="text16Bold">{type === "add" ? "Сохранить" : "Редактировать"}</Typography>
+              <Typography variant="text16Bold">
+                {type === "add" ? "Сохранить" : "Редактировать"}
+              </Typography>
             </Button>
+            {type === "edit" && (
+              <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                boxshadow="none"
+                onClick={onHandleClickDelete}
+                sx={{
+                  height: "56px",
+                  borderRadius: "16px",
+                  marginLeft: "0 !important",
+                  margingTop: "0 !important",
+                  textTransform: "none",
+                  boxShadow: "none",
+                  color: "black",
+                  backgroundColor: "rgba(246, 248, 249, 1)",
+                  border: "1px solid rgba(33, 33, 33, 0.2)",
+                  "&.Mui-disabled": {
+                    backgroundColor: "#F6F8F9",
+                    color: "gray",
+                  },
+
+                  "&.hover": {
+                    backgroundColor: "gray",
+                    color: "gray",
+                  },
+                }}
+              >
+                <Typography variant="text16Bold">Удалить</Typography>
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
       )}
+    
       <RequestProgressModal
         handleClickButton={handleClickButtonRepeat}
         open={isOpenRequestProgressModal}
         close={handleExitModalRequest}
-        error={postError ? postError : putError? putError : null}
-        isLoading={isLoadingPostError? isLoadingPostError : isLoadingPutError}
-        isSuccess={(isSuccessPost && !isLoadingPostError) || (isSuccessPut && !isLoadingPutError)}
+        error={postError ? postError : putError ? putError : null}
+        isLoading={isLoadingPostError ? isLoadingPostError : isLoadingPutError}
+        isSuccess={
+          (isSuccessPost && !isLoadingPostError) ||
+          (isSuccessPut && !isLoadingPutError)
+        }
       ></RequestProgressModal>
+        {isOpenModalDelete && <ModalDelete
+              open={isOpenModalDelete}
+              onhandleClickDelete={onHandleDelete}
+              name="склад"
+            ></ModalDelete>}
     </>
   );
 };

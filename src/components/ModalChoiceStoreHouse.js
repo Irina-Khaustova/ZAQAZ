@@ -92,6 +92,8 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
     refetchStoreHouses();
     close();
   };
+
+  
 // рабочий код, но состояние окна не меняется если ошибка запроса данных
   // const onGoToStoreHouse = (id) => {
   //   setChoiceId(id);
@@ -108,7 +110,7 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
     setdataDrawItem(null);
   
     // Затем устанавливаем ID и тип модального окна
-    setChoiceId(id);
+    // setChoiceId(id);
     setTypeModal('edit');
   
     try {

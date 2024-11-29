@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -30,7 +30,10 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   const [error, setError] = useState(false);
   const [imageToSend, setImageToSend] = useState(null);
   const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
-
+  
+  const {storeHouse} = useSelector(store => store.sideBar)
+  const storeId = storeHouse === null ? parseInt(process.env.REACT_APP_STORE_ID) : storeHouse;
+ 
   const maxSizeMb = 60 * 1024 * 1024;
   const maxWidth = 2000;
   const maxHeight = 2000;
@@ -39,7 +42,10 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     if (open) {
       setError(false);
       setErrorText("");
-      setInputValue("");
+      setInputValue({
+        name: "",
+        nameEn: ""
+      });
       setImageSelect(null)
     }
   }, [open]);
@@ -53,7 +59,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
         name: inputValue.name,
         nameEn: inputValue.nameEn,
         store: {
-          id: 26,
+          id: storeId
         },
         extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
         color: "b9f6ca",
@@ -69,7 +75,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     setisOpenRequestProgressModal(true);
     close()
     try {
-      await postCategoryImage({image: imageToSend, id: category.id}).unwrap();
+      await postCategoryImage({image: imageToSend}).unwrap();
       refetch();
       close();
     } catch (err) {
@@ -84,7 +90,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
         name: inputValue.name,
         nameEn: inputValue.nameEn,
         store: {
-          id: 26,
+          id: storeId
         },
         extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
         color: "b9f6ca",
@@ -97,21 +103,93 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     }
   };
 
-  const onhandleClick = (e) => {
+  // const onhandleClick = (e) => {
+  //   e.preventDefault();
+  //   setError(false);
+  //   setErrorText("");
+  //   if (inputValue === "") {
+  //     setErrorText("Введите название!");
+  //     setError(true);
+  //   } else {
+  //     if (modalCategory === "Создание категории") {
+  //       onSigninSubmitCategory();
+  //       // onSigninSubmitCategoryImage();
+  //     } else {
+  //       onSigninSubmitSubCategory();
+  //     }
+  //   }
+  // };
+
+  const onhandleClick = async (e) => {
     e.preventDefault();
     setError(false);
     setErrorText("");
-    if (inputValue === "") {
+  
+    if (inputValue.name === "" || inputValue.nameEn === "") {
       setErrorText("Введите название!");
       setError(true);
-    } else {
-      if (modalCategory === "Создание категории") {
-        onSigninSubmitCategory();
-        onSigninSubmitCategoryImage();
-      } else {
-        onSigninSubmitSubCategory();
-      }
+      return;
     }
+  
+    try {
+      if (modalCategory === "Создание категории") {
+        // Отправляем запрос на создание категории
+        const newCategory = await postCategory({
+          parentCategory: null, // или parentCategory: { id: category?.id }
+          name: inputValue.name,
+          nameEn: inputValue.nameEn,
+          store: { id: storeId },
+          extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
+          color: "b9f6ca",
+          
+        }).unwrap();
+  
+        // Извлекаем ID новой категории
+        const categoryId = newCategory.id;
+        console.log("Созданная категория ID:", categoryId);
+  
+        // Конвертируем изображение в Base64 (если это нужно)
+        const fileBase64 = await convertToBase64(imageToSend);
+        console.log("Созданная картинка:", fileBase64);
+        // Формируем объект для отправки изображения
+        const imagePayload = {
+          fileBase64: fileBase64
+        }
+         
+     
+  
+        // Отправляем запрос на загрузку изображения
+        await postCategoryImage({id: newCategory.id, image: imagePayload}).unwrap();
+        console.log("Изображение загружено успешно!");
+      } else {
+        // Логика для подкатегории
+        await postCategory({
+          parentCategory: { id: category?.id },
+          name: inputValue.name,
+          nameEn: inputValue.nameEn,
+          store: { id: storeId },
+          extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
+          color: "b9f6ca",
+          images: [imageToSend],
+        }).unwrap();
+        console.log("Подкатегория создана успешно!");
+      }
+  
+      refetch();
+      close();
+    } catch (err) {
+      console.error(err);
+      alert(err?.data || "Произошла ошибка");
+    }
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Убираем `data:image/*;base64,`
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const onHandleAddPhoto = (e) => {
@@ -135,29 +213,19 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
                       isFirst: true,
                   });
 
-                console.log(999, imageToSend)
+                console.log(999, imageToSend, "id", category)
                   // Отправка данных на сервер
                   
               });
                 // Отправка изображения на сервер
                 // dispatch(uploadImage(formData)); // Пример действия для загрузки изображения
             }
+            console.log()
         };
     }
 };
 
-const convertToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-          resolve(reader.result.split(',')[1]); // Извлекаем только часть после "data:image/png;base64,"
-      };
-      reader.onerror = reject;
-  });
-};
-
-  // console.log(imageSelect);
+ // console.log(imageSelect);
 
   const handleInputChange = (e) => {
     setError(false);

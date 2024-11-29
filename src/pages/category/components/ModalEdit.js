@@ -31,6 +31,8 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
   // const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
   const { category } = useSelector((state) => state.category);
   const {subcategory} = useSelector((state) => state.subcategory);
+  const {storeHouse} = useSelector(store => store.sideBar)
+  const storeId = storeHouse === null ? parseInt(process.env.REACT_APP_STORE_ID) : storeHouse;
 
   const maxSizeMb = 60 * 1024 * 1024;
   const maxWidth = 2000;
@@ -58,7 +60,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
         name: inputValue.name,
         nameEn: inputValue.nameEn,
         store: {
-        id: 26,
+          id: storeId
         },
         extId: category.extId,
         color: "b9f6ca",
@@ -76,7 +78,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
         name: inputValue.name,
         nameEn: inputValue.nameEn,
         store: {
-        id: 26,
+          id: storeId
         },
         extId: category.extId,
         color: "b9f6ca",
