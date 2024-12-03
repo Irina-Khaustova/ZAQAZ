@@ -7,7 +7,12 @@ import {
   Typography,
 } from "@mui/material";
 
+import { useState } from "react";
+
+
 const ModalDelete = ({ open, close, modalCategory, onhandleClickDelete, name }) => {
+
+  const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
 
   const onhandleClick = (e) => {
     e.preventDefault();
@@ -17,7 +22,8 @@ const ModalDelete = ({ open, close, modalCategory, onhandleClickDelete, name }) 
   console.log();
 
   return (
-    <Dialog
+    <>
+    {!isOpenRequestProgressModal && <Dialog
       open={open}
       onClose={() => {}}
       maxWidth={false} 
@@ -170,6 +176,8 @@ const ModalDelete = ({ open, close, modalCategory, onhandleClickDelete, name }) 
         </Button>
       </DialogActions>
     </Dialog>
+}
+    </>
   );
 };
 

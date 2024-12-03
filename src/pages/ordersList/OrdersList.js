@@ -14,7 +14,7 @@ import changeStatusOrder from "../../utils/changeStatusOrder.js";
 import InputSelect from "../../components/InputSelect.js";
 
 function OrdersList() {
-  const [currentPage, setCurrentPage] = useState(1); // выбранная страница
+  const [currentPage, setCurrentPage] = useState(0); // выбранная страница
   const [totalPages, setTotalPages] = useState(0); // всего страниц
   const [url, setUrl] = useState("");
 

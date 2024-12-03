@@ -61,7 +61,9 @@ const ModalAddStoreHouse = ({
   ] = useDeleteStoreHouseMutation(); 
 
   const [error, setError] = useState(false);
-  const [isOpenRequestProgressModal, setisOpenRequestProgressModal] =
+  const [isOpenRequestProgressModal1, setisOpenRequestProgressModal1] =
+    useState(false);
+    const [isOpenRequestProgressModal, setisOpenRequestProgressModal] =
     useState(false);
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
  
@@ -421,6 +423,7 @@ const ModalAddStoreHouse = ({
           (isSuccessPut && !isLoadingPutError)
         }
       ></RequestProgressModal>
+      
         {isOpenModalDelete && <ModalDelete
               open={isOpenModalDelete}
               close={closeModalDelete}

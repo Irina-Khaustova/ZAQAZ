@@ -43,12 +43,12 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
         name: "",
       },
       parentCategory: { name: "" },
+      images: [],
       productName: "",
       productCode: "",
       price: "",
       quantity: "",
       productType: "",
-      images: [],
       productDescription: "",
       technicalSpecifications: {
         additionalInfo1: "",
@@ -112,7 +112,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
       price: data.price,
       quantity: data.quantity,
       productType: data.type?.name,
-      images: images,
+      images: data.images,
       productDescription: data.description,
       technicalSpecifications: {
         additionalInfo1: data.technicalSpecifications.additionalInfo1,
@@ -124,7 +124,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
         id: data.technicalSpecifications.id,
         netWeight: data.technicalSpecifications.netWeight,
         power: data.technicalSpecifications.power,
-        voltage: data.technicalSpecifications.additionalInfo1,
+        voltage: data.technicalSpecifications.voltage,
       },
     })
   };
@@ -137,7 +137,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
     setIsSubmitting(true); 
 
     const productPayload = {
-        id: id,
+        id: Number(id),
         title: inputValues.productName,
         description: inputValues.productDescription,
         category: {
@@ -409,7 +409,7 @@ const ModalEditProduct = ({ open, close, onhandleClickDelete, refetch }) => {
               justifyContent: "space-between",
             }}
           >
-            {inputValues.images.map((el, index) => (
+            {inputValues.images?.map((el, index) => (
               <CustomTextField
                 key={index}
                 margin="dense"

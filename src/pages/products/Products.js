@@ -6,14 +6,16 @@ import { ReactComponent as MyIconSearch } from "../../image/search.svg";
 import Input from "../../components/Input.js";
 import CustomCheckbox from "./components/CustomCheckbox.js";
 import CustomButton from "../../components/CustomButton.js";
-import { useGetProductsswithFilerQuery } from "../../api/Api.js";
+// import { useGetProductsswithFilerQuery } from "../../api/Api.js";
 import Pagination from "../../components/Pagination.js";
 import ModalAdd from "./components/ModalAdd.js";
 import { putIsOpenModalEdit } from "../products/ProductsSlice.js";
 import ModalEditProduct from "../../components/ModalEditProduct.js";
 import InputSelect from "../../components/InputSelect.js";
 import { useDispatch, useSelector } from "react-redux";
+import { useLazyGetProductsswithFilerQuery } from "../../api/Api.js";
 const LazyProductItem = lazy(() => import("./components/ProductItem.js"));
+
 
 function Products() {
   const [totalPages, setTotalPages] = useState(0);
@@ -23,12 +25,17 @@ function Products() {
   const [url, setUrl] = useState("filter?size=8");
   const [isModalAdd, setIsModalAdd] = useState(false);
   const [dataDraw, setDataDraw] = useState("");
+  const {storeHouse} = useSelector(state => state.sideBar);
   
   //   const dispatch = useDispatch();
 
-  const { data, error, isLoading, refetch } = useGetProductsswithFilerQuery({
-    request: url,
-  });
+  // const { data, error, isLoading, refetch } = useGetProductsswithFilerQuery({
+  //   request: url,
+  // });
+
+  const [triggerGetProduct, { data, isLoadingGet, errorGet }] = useLazyGetProductsswithFilerQuery();
+
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { modalEdit } = useSelector((state) => state.products);
@@ -42,7 +49,31 @@ function Products() {
     sortDateAdd: "По дате добавления",
     sortName: "",
     search: "",
+    storeHouse: storeHouse? Number(storeHouse): "",
   });
+
+  useEffect(() => {
+    // setDataDraw(null)
+    console.log("storeHouse", storeHouse)
+    
+    let nUrl = `filter?size=8`
+    // .concat(currentPage === 0 || 1? `&page=${currentPage}` : "")
+      .concat(currentPage === 0? `&page=${currentPage}` : "")
+      .concat(currentPage ? `&page=${currentPage - 1}` : "")
+      .concat(filter.size ? `&size=${filter.size}` : "")
+      .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
+      .concat(filter.maxPrice ? `&maxPrice=${filter.maxPrice}` : "")
+      .concat(filter.minQuantity ? `&minQuantity=${filter.minQuantity}` : "")
+      .concat(filter.maxQuantity ? `&maxQuantity=${filter.maxQuantity}` : "")
+      .concat(isCheckSortDate ? "&sortBy=date" : "")
+      .concat(isCheckSortName ? "&sortBy=name" : "")
+      .concat(filter.search ? `&search=${filter.search}` : "")
+      .concat(storeHouse ? `&storeId=${storeHouse.id}` : "")
+      console.log( "newUrl",nUrl)
+triggerGetProduct({
+  request: nUrl
+})
+  },[storeHouse, currentPage])
 
   useEffect(() => {
     setTotalPages(data ? data.page.totalPages : null);
@@ -53,8 +84,19 @@ function Products() {
   }, [data]);
 
   useEffect(() => {
+    console.log(currentPage)
     onSubmit()
   },[currentPage])
+
+  useEffect(() => {
+    setFilter((prev) => {
+      // Обновляем prev.storeHouse в иммутабельном стиле
+      return {
+        ...prev,
+        storeHouse: [...prev.storeHouse, Number(storeHouse)] // Добавляем новое значение в массив
+      };
+    });
+  },[storeHouse])
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
@@ -92,7 +134,7 @@ function Products() {
     console.log(4545, filter.search);
     let nUrl = `filter?size=8`
     // .concat(currentPage === 0 || 1? `&page=${currentPage}` : "")
-    .concat(currentPage === 0? `&page=${currentPage}` : "")
+      .concat(currentPage === 0? `&page=${currentPage}` : "")
       .concat(currentPage ? `&page=${currentPage - 1}` : "")
       .concat(filter.size ? `&size=${filter.size}` : "")
       .concat(filter.minPrice ? `&minPrice=${filter.minPrice}` : "")
@@ -101,7 +143,8 @@ function Products() {
       .concat(filter.maxQuantity ? `&maxQuantity=${filter.maxQuantity}` : "")
       .concat(isCheckSortDate ? "&sortBy=date" : "")
       .concat(isCheckSortName ? "&sortBy=name" : "")
-      .concat(filter.search ? `&search=${filter.search}` : "");
+      .concat(filter.search ? `&search=${filter.search}` : "")
+      .concat(filter.storeHouse ? `&storeId=${filter.storeHouse.id}` : "")
     setUrl(nUrl);
   };
 
@@ -109,7 +152,7 @@ function Products() {
 
   const handleRefetch = () => {
     // window.location.reload();
-    refetch();
+    triggerGetProduct({request: url})
 
     console.log("reload");
   };
@@ -436,12 +479,12 @@ function Products() {
                 justifyContent: "flex-start",
               }}
             >
-              {error && (
+              {errorGet && (
                 <Typography sx={{ marginTop: "20px" }}>
                   Ошибка загрузки
                 </Typography>
               )}
-              {isLoading ? (
+              {isLoadingGet ? (
                 <Typography>Loading...</Typography>
               ) : dataDraw ? (
                 dataDraw?.content.map((el, index) => (
@@ -459,6 +502,14 @@ function Products() {
                   </Suspense>
                 ))
               ) : null}
+               {dataDraw?.content && dataDraw?.content.length === 0 ? (
+  <Box sx={{  width: "405px", height: "110px", margin: "auto", marginTop: "15%" }}>
+    <Box sx={{textAlign: "center", display: "flex", flexDirection: 'column'}}>
+      <Typography variant="text28Bold" sx={{marginBottom: "8px"}}> На этом складе нет товаров</Typography>
+      <Typography variant="text16Light"> Добавьте товары  чтобы они появились здесь</Typography>
+    </Box>
+  </Box>
+) : null}
             </Box>
             <Pagination
               currentPage={currentPage}

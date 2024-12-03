@@ -53,6 +53,12 @@ const ModalChoiceStoreHouse = ({ open, close }) => {
   // })
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (open) {
+      refetchStoreHouses(); // Принудительно отправляем запрос
+    }
+  }, [open, refetchStoreHouses]);
+
   
   const postStoreHouse = async () => {
     if (isSubmitting) return;
