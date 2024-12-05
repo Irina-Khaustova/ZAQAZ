@@ -7,10 +7,13 @@ import ButtonBack from "../../components/ButtonBack.js";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as MyIconEdit } from "../../image/edit-black.svg";
 import { ReactComponent as MyIconTrash } from "../../image/icon-trash.svg";
+import { ReactComponent as MyIconCamera } from "../../image/icon-camera.svg";
 import { putIsOpenModalEdit } from "../products/ProductsSlice.js";
 import ModalEditProduct from "../../components/ModalEditProduct.js";
 import ModalDelete from "../../components/ModalDelete.js";
 import ProductImage from "../../components/ProductImage.js";
+import  IconNoPhoto  from "../../image/no-camera.jpg";
+
 
 function Product() {
   const [product, setProduct] = useState(null);
@@ -289,12 +292,15 @@ function Product() {
                       sx={{
                         width: "375px",
                         height: "367px",
-
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center", 
+                        justifyContent: "center",
                         border: "1px solid #EAEAE8",
                         borderRadius: "16px",
                       }}
                     >
-                      <ProductImage
+                      {currentImage? <ProductImage
                         className="carousel-image"
                         sx={{
                           width: "150px",
@@ -304,7 +310,7 @@ function Product() {
                           borderRadius: "16px",
                         }}
                         imagePath={currentImage}
-                      />
+                      /> : <img src={IconNoPhoto} alt={"product"} style={ {width: "100px", height: '100px'}}/> } 
                     </Box>
                     <Box
                       sx={{

@@ -87,6 +87,16 @@ export const Api = createApi({
         };
       },
     }),
+    postProductImage: builder.mutation({
+      query(data) {
+        const {id, image} = data;
+        return {
+          url: `v1/store/category/item/${id}/image`,
+          method: "POST",
+          body: image
+        };
+      },
+    }),
     postStoreHouse: builder.mutation({
       query(body) {
         console.log(body);
@@ -191,6 +201,16 @@ export const Api = createApi({
       // Invalidates all queries that subscribe to this Post `id` only.
       invalidatesTags: (result, error, id) => [{ type: 'storeHouses', id }],
     }),
+    deleteCategoryImage: builder.mutation({
+      query(id) {
+        return {
+          url: `v1/store/image/${id}`,
+          method: 'DELETE',
+        }
+      },
+      // Invalidates all queries that subscribe to this Post `id` only.
+      invalidatesTags: (result, error, id) => [{ type: 'storeHouses', id }],
+    }),
   }),
 });
 
@@ -218,5 +238,9 @@ export const {
   usePutStoreHouseMutation,
   usePostCategoryImageMutation,
   useDeleteStoreHouseMutation,
-  useLazyGetStoreHouseQuery
+  useLazyGetStoreHouseQuery,
+useLazyGetProductsswithFilerQuery,
+usePostProductImageMutation,
+useDeleteCategoryImageMutation, 
+useLazyGetPictureQuery
 } = Api;

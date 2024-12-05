@@ -8,7 +8,7 @@ import ModalEdit from "./components/ModalEdit.js";
 import { useGetCategoryWithSubcategoryQuery } from "../../api/Api.js";
 import ModalAdd from "./components/ModalAdd.js";
 import { useDispatch, useSelector } from "react-redux";
-import { putcategory } from "./categorySlice.js";
+import { putcategory, putcategoryImage, putcategoryImageId } from "./categorySlice.js";
 import { useDeleteCategoryMutation } from "../../api/Api.js";
 import RequestProgressModal from "../../components/RequestProgressModal.js";
 
@@ -41,17 +41,18 @@ function Category() {
 
   useEffect(() => {
     console.log(666666666, storeHouse)
-    if (data) {
-      if (searchValue === "") {
-        setDataCategory(data.content);
-      } else
-        setDataCategory(
-          data.content.filter(
-            (el) =>
-              el.name &&
-              el.name.toLowerCase().includes(searchValue.toLowerCase())
-          )
-        );
+    if (!data) {
+      setDataCategory(null); // Устанавливаем null, если data пустая
+    } else if (searchValue === "") {
+      setDataCategory(data.content); // Устанавливаем полный контент, если поиск пустой
+    } else {
+      setDataCategory(
+        data.content.filter(
+          (el) =>
+            el.name &&
+            el.name.toLowerCase().includes(searchValue.toLowerCase())
+        )
+      );
     }
   }, [data, searchValue]);
 
@@ -89,11 +90,17 @@ function Category() {
     setIsModalAdd(false)
   }
 
-  const handlePutCategory = (category) => {
+  const handlePutCategory = (category, images, id) => {
     // let newId = +id;
     // let filter = dataCategory?.filter((el) => el.id === newId);
     // console.log(filter)
     dispatch(putcategory(category));
+    if(category.images.length > 0) {
+    dispatch(putcategoryImage(category.images[0].imagePath));
+    } else {
+      dispatch(putcategoryImage(null));
+    }
+    dispatch(putcategoryImageId(category.images[0]?.id))
   };
 
   const handleToggleModalEdit = useCallback((e) => {
@@ -101,6 +108,7 @@ function Category() {
   }, []);
 
   const handleRefetch = () => {
+    setDataCategory(null)
     refetch();
   };
 
@@ -240,7 +248,7 @@ function Category() {
                     categoryName={el.name}
                     subcategory={el.subcategories}
                     onModalToggle={handleToggleModalEdit}
-                    putCategory={() => handlePutCategory(el)}
+                    putCategory={() => handlePutCategory(el, el.images, el.id)}
                     deleteCategory={() => handleDeleteCategory(el.id)}
                     image={el.images[0]}
                     categoryType={"Category"}

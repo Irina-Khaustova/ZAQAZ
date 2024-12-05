@@ -4,6 +4,9 @@ import { ReactComponent as MyIconArrowOrange } from "../../../image/arrow-right-
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as MyIconButtonEdit } from "../../../image/edit.svg";
 import { useGetPictureQuery } from "../../../api/Api";
+import { useDispatch, useSelector } from "react-redux";
+import { putcategoryImage, putcategoryImageId } from "../categorySlice";
+import { putIsOpenModalEdit } from "../../products/ProductsSlice";
 
 function CategoryItem({
   id,
@@ -23,6 +26,9 @@ function CategoryItem({
   const [subCategoryDraw, setSubCategoryDraw] = useState([]);
   const [isShowEllipsis, setIsShowEllipsis] = useState(false);
   const containerRef = useRef(null);
+  const dispatch = useDispatch();
+
+  const { data } = useGetPictureQuery(images[0]?.imagePath);
 
   useEffect(() => {
     if (subcategory) {
@@ -31,6 +37,12 @@ function CategoryItem({
      console.log(str)
     }
   }, [subcategory]);
+
+  // useEffect(() => {
+  //   dispatch(putcategoryImage(data))
+    
+  //   console.log(data)
+  // },[data])
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -68,7 +80,7 @@ function CategoryItem({
 
 
   // const { data } = useGetPictureQuery(categoryType === 'Category' ? image?.imagePath : images[0]?.imagePath);
-  const { data } = useGetPictureQuery(images[0]?.imagePath);
+  
 
   // useEffect(()=> {
   //   async function fetchAndSetImage() {

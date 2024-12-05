@@ -14,8 +14,10 @@ import {
 import { ReactComponent as MyIconCamera } from "../../../image/icon-camera.svg";
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
 import { useSelector } from "react-redux";
-import { usePutCategoryMutation } from "../../../api/Api";
+import { useDeleteCategoryImageMutation, usePostCategoryImageMutation, usePutCategoryMutation, useLazyGetPictureQuery } from "../../../api/Api";
 import CustomTextField from "../../../components/CustomTextField";
+import { putcategoryImage } from "../categorySlice";
+import { CalculateSharp } from "@mui/icons-material";
 // import RequestProgressModal from "../../../components/RequestProgressModal";
 
 const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }) => {
@@ -31,65 +33,165 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
   // const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
   const { category } = useSelector((state) => state.category);
   const {subcategory} = useSelector((state) => state.subcategory);
-  const {storeHouse} = useSelector(store => store.sideBar)
+  const {storeHouse} = useSelector(store => store.sideBar);
+  const {categoryImage, categoryImageId} = useSelector((store) => store.category);
+  const [initialImage, setInitialImage] = useState(null);
+  const [imageToSend, setImageToSend] = useState(null);
   const storeId = storeHouse === null ? parseInt(process.env.REACT_APP_STORE_ID) : storeHouse;
+  const [getPicture, { data, isLoading, errorPicture }] = useLazyGetPictureQuery();
 
   const maxSizeMb = 60 * 1024 * 1024;
   const maxWidth = 2000;
   const maxHeight = 2000;
 
   useEffect(() => {
-    console.log(category.nameEn)
-    setInputValue({name: category?.name, nameEn: category?.nameEn});
-  }, [category]);
+    setImageSelect(null)
+    const fetchPicture = async () => {
+      try {
+        const result = await getPicture(categoryImage).unwrap();
+        console.log("Данные изображения:", result);
+        setImageSelect(result)
+      } catch (error) {
+        console.error("Ошибка получения изображения:", error);
+      }
+    };
+  }, [open, categoryImage])
 
   useEffect(() => {
-    console.log("subcategory:", subcategory)
-    setInputValue({name: subcategory?.name, nameEn: subcategory?.nameEn});
-  }, [subcategory]);
+    setInitialImage(categoryImage); 
+    if (categoryType === "Category" && category) {
+      setInputValue({ name: category?.name || "", nameEn: category?.nameEn || "" });
+    } else if (categoryType === "SubCategory" && subcategory) {
+      setInputValue({ name: subcategory?.name || "", nameEn: subcategory?.nameEn || "" });
+    }
+  }, [category, subcategory, categoryType]);
 
+  useEffect(() => {
 
+    getPicture(categoryImage)
+    console.log(2222, categoryImage)
+  }, [categoryImage])
 
+  useEffect(()=> {
+   setImageSelect(data)
+   console.log(data)
+  }, [data])
+
+ 
   const [putCategory] = usePutCategoryMutation();
+  const [postCategoryImage] = usePostCategoryImageMutation();
+  const [deleteCategoryImage] = useDeleteCategoryImageMutation();
+ 
 
-  const onSigninSubmit = async () => {
-    if(categoryType === "Category") {
+  //  старая работающая функция отправки без картинок
+//   const onSigninSubmit = async () => {
+//     if(categoryType === "Category") {
+//     try {
+//       await putCategory({
+//         id: category.id,
+//         name: inputValue.name,
+//         nameEn: inputValue.nameEn,
+//         store: {
+//           id: storeId
+//         },
+//         extId: category.extId,
+//         color: "b9f6ca",
+//       }).unwrap();
+//       refetch();
+//       close();
+//     } catch (err) {
+//       alert(err.data);
+//     }
+//   } else if(categoryType === "SubCategory") {
+//     try {
+//       await putCategory({
+//         parentId: category.id,
+//         id: subcategory.id,
+//         name: inputValue.name,
+//         nameEn: inputValue.nameEn,
+//         store: {
+//           id: storeId
+//         },
+//         extId: category.extId,
+//         color: "b9f6ca",
+//       }).unwrap();
+//       refetch();
+//       close();
+//     } catch (err) {
+//       alert(err.data);
+//     }
+//   }
+// }
+
+const onSigninSubmit = async () => {
+  const id = category.id;
+  try {
+   
+    console.log( imageSelect, initialImage)
+    if(imageToSend) {
+    const fileBase64 = await convertToBase64(imageToSend);
+    }
+    // console.log(data, data.id)
+    // console.log(imageSelect, initialImage, isImageChanged)
+    // const uploadImagePromise = isImageChanged ? postCategoryImage({image: imageSelect, id: category.id}) : Promise.resolve();
+    // const deleteImagePromise = isImageChanged && initialImage ? deleteCategoryImage(category?.id) : Promise.resolve();
+    // const updateCategoryPromise = putCategory({
+    //   id: category.id,
+    //   name: inputValue.name,
+    //   nameEn: inputValue.nameEn,
+    //   store: { id: storeId },
+    //   extId: category.extId,
+    //   color: "b9f6ca",
+    // }).unwrap();
+
+    // await Promise.all([uploadImagePromise, deleteImagePromise, updateCategoryPromise]);
+
     try {
       await putCategory({
         id: category.id,
         name: inputValue.name,
         nameEn: inputValue.nameEn,
-        store: {
-          id: storeId
-        },
+        store: { id: storeId },
         extId: category.extId,
         color: "b9f6ca",
       }).unwrap();
-      refetch();
-      close();
-    } catch (err) {
-      alert(err.data);
+    } catch (error) {
+      console.error("Ошибка при  редактировании категории:", error);
     }
-  } else if(categoryType === "SubCategory") {
+
     try {
-      await putCategory({
-        parentId: category.id,
-        id: subcategory.id,
-        name: inputValue.name,
-        nameEn: inputValue.nameEn,
-        store: {
-          id: storeId
-        },
-        extId: category.extId,
-        color: "b9f6ca",
-      }).unwrap();
-      refetch();
-      close();
-    } catch (err) {
-      alert(err.data);
+      const fileBase64 = await convertToBase64(imageToSend);
+      console.log("id", id)
+      const imagePayload = [{fileBase64: fileBase64}]
+      await postCategoryImage({ image: imagePayload, id: id }).unwrap();
+    } catch (error) {
+      console.error("Ошибка при загрузке изображения:", error);
     }
+    
+    try {
+      await deleteCategoryImage(categoryImageId).unwrap();
+    } catch (error) {
+      console.error("Ошибка при удалении изображения:", error);
+    }
+
+    refetch();
+    close();
+    alert("Категория обновлена и изображение загружено успешно!");
+
+  } catch (error) {
+    console.error("Ошибка:", error);
+    alert("Произошла ошибка при сохранении данных. Попробуйте снова.");
   }
-}
+};
+
+const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.split(",")[1]); // Убираем `data:image/*;base64,`
+    reader.onerror = (error) => reject(error);
+  });
+};
 
   const onhandleClick = (e) => {
     e.preventDefault();
@@ -102,6 +204,10 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
       onSigninSubmit();
     }
   };
+
+  const onHandleClickChange = () => {
+    setImageSelect(null);
+  }
 
   const onhandleClickDelete = () => {
     deleteCategory(category.id);
@@ -133,6 +239,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
             } else {
                 setErrorText("");
                 setImageSelect(image.src);
+                setImageToSend(file)
                 console.log(2222, imageSelect)
                 // Если вам нужно отправить изображение на сервер, используйте FormData
                 const formData = new FormData();
@@ -267,7 +374,7 @@ const ModalEdit = ({ open, close, value, refetch, deleteCategory, categoryType }
               variant="contained"
               color="secondary"
               disableElevation
-              onClick={onhandleClick}
+              onClick={onHandleClickChange}
               sx={{
                 height: "40px",
                 border: "1px solid rgba(246, 248, 249, 1)",

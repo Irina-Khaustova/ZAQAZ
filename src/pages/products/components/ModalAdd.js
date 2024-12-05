@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 import { ReactComponent as MyIconExit } from "../../../image/icon-exit.svg";
-import { usePostProductMutation } from "../../../api/Api";
+import { usePostProductMutation, usePostProductImageMutation } from "../../../api/Api";
 import {ReactComponent as MyIconFile} from "../../../image/file.svg";
 import RequestProgressModal from "../../../components/RequestProgressModal";
 
@@ -59,6 +59,8 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   const [error, setError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpenRequestProgressModal, setisOpenRequestProgressModal] = useState(false);
+   const [imageToSend, setImageToSend] = useState([]);
+   const [imagesToDraw,setImagesToDraw] = useState(Array(8).fill(null))
   const [inputValues, setInputValues] = useState({
     category: {
       name: "",
@@ -69,7 +71,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     price: "",
     quantity: "",
     productType: "",
-    images: Array(8).fill(null),
+  
     productDescription: "",
     technicalSpecifications: {
       additionalInfo1: "",
@@ -89,10 +91,15 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   // }, [])
 
   const [postProduct, { error: putProductError, isLoading: isLoadingError, isSuccess: isSuccessPostProduct }] = usePostProductMutation();
+  const [postProductImage, { error: postProductImageError, isLoading: isLoadingImageError, isSuccess: isSuccessPostProductImage }] = usePostProductImageMutation();
+
+  const maxSizeMb = 60 * 1024 * 1024;
+  
 
   const onSigninSubmitProduct = async () => {
     if (isSubmitting) return; 
   setIsSubmitting(true); 
+
 
     const productPayload = {
       "title": inputValues.productName,
@@ -109,11 +116,11 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
       },
       "price": inputValues.price,
       // "active": data.active,
-      "extId": inputValues.productCode,
+      "sku": inputValues.productCode,
       // "measureUnit": data.measureUnit,
       // "tags": data.tags,
       // "sku": data.sku,
-      "images":  [],
+      // "images":  [],
       "technicalSpecifications": inputValues.technicalSpecifications,
       // "type": {
       //   "id": data.type.id,
@@ -122,13 +129,27 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
       "quantity": inputValues.quantity,
       "type": {
         id: 3,
-        name: inputValues.productType
+        name: inputValues.productType || "Тестовый тип "
       }
   }
   try {
-    setisOpenRequestProgressModal(true)
-    close()
-    await postProduct(productPayload).unwrap();
+    const createdProduct = await postProduct(productPayload).unwrap();
+    const productId = createdProduct.id; // Предполагается, что ID возвращается в ответе
+
+    postProductImage({id: Number(productId), image: imageToSend})
+
+    // Отправляем картинки
+    // const imageUploadPromises = inputValues.images.map(async (image) => {
+    //   const imagePayload = {
+    //     productId,
+    //     image, // предположительно base64 или ссылка на изображение
+    //   };
+    //   return await postProductImage(imagePayload).unwrap(); // postImage — ваша функция для отправки картинки
+    // }); 
+
+    // Ждем загрузки всех изображений
+    // await Promise.all(imageUploadPromises);
+
     alert("Успешно");
   } catch (err) {
     console.log(err);
@@ -167,7 +188,7 @@ const handleInputChange = (e) => {
 )
 };
 
-  const onhandleClick = (e) => {
+  const onhandleClick = async (e) => {
     e.preventDefault();
     if(!Object.values(error).some((value) => value !== false)) {
       onSigninSubmitProduct();
@@ -186,27 +207,80 @@ const handleInputChange = (e) => {
   console.log();
 
   useEffect(() => {
-    if (open) {
-      
-    }
+    
+   setInputValues({
+      category: {
+        name: "",
+      },
+      parentCategory: { name: "" },
+      productName: "",
+      productCode: "",
+      price: "",
+      quantity: "",
+      productType: "",
+      productDescription: "",
+      technicalSpecifications: {
+        additionalInfo1: "",
+        additionalInfo2: "",
+        additionalInfo3: "",
+        current: "",
+        dimensions: "",
+        grossWeight: "",
+        netWeight: "",
+        power: "",
+        voltage: "",
+      },
+    })
   }, [open]);
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Убираем `data:image/*;base64,`
+      reader.onerror = (error) => reject(error);
+    });
+  };
  
-  const handleAddPhoto = (e, index) => {
+
+  const onHandleAddPhoto = async (e, index) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const base64String = e.target.result.split(",")[1];
-        setInputValues((prev) => {
-          const newImages = [...prev.images];
-          newImages[index] = { id: {}, fileBase64: base64String, imagePath: "" };
-          return {
-            ...prev,
-            images: newImages,
-          };
-        });
+      const image = new Image();
+      image.src = URL.createObjectURL(file);
+      console.log(image.src);
+  
+      image.onload = async () => {
+        // Check image size
+        if (image.width > maxSizeMb) {
+          setErrorText("Размер изображения должен быть 2х2");
+        } else {
+          setErrorText("");
+  
+          // Update image in imagesToDraw state
+          const updatedImages = [...imagesToDraw]; // create a copy of the array
+          updatedImages[index] = { fileUrl: image.src }; // update image at the specified index
+          setImagesToDraw(updatedImages);
+          console.log(updatedImages);
+  
+          try {
+            // Convert image to base64
+            const fileBase64 = await convertToBase64(file);
+  
+            // Update imageToSend state
+            const updatedSendImages = [...imageToSend]; // create a copy of the array
+            updatedSendImages[index] = { fileBase64 }; // add base64 image data
+            setImageToSend(updatedSendImages); // update state
+            console.log("Image to send:", updatedSendImages);
+          } catch (error) {
+            setErrorText("Ошибка при конвертации изображения в base64");
+          }
+        }
       };
-      reader.readAsDataURL(file); // Прочитать файл и создать строку base64
+  
+      image.onerror = () => {
+        setErrorText("Не удалось загрузить изображение");
+      };
     }
   };
 
@@ -322,7 +396,7 @@ const handleInputChange = (e) => {
         <Typography sx={{ marginTop: "15px" }}>Код товара</Typography>
         <CustomTextField
           margin="dense"
-          name="productCode"
+          name="sku"
           type="number"
           value={inputValues.productCode}
           onChange={handleInputChange}
@@ -377,7 +451,7 @@ const handleInputChange = (e) => {
             Не должно превышать <strong>60 мб</strong>, размер
             <strong> 2х2</strong>
           </Typography>
-          <Box
+          {/* <Box
             sx={{
               width: "100%",
               display: "flex",
@@ -386,11 +460,12 @@ const handleInputChange = (e) => {
               justifyContent: "space-between",
             }}
           >
-            {inputValues.images.map((el, index) => (
+            {imagesToDraw.map((el, index) => (
               <CustomTextField
                 key={index}
                 margin="dense"
                 id={`file-upload-${index}`}
+                
                 type="file"
                 noBorder
                 sx={{
@@ -423,11 +498,76 @@ const handleInputChange = (e) => {
                 inputProps={{
                   style: { display: "none" },
                 }}
-                value={""} 
+                
                 onChange={(e) => handleAddPhoto(e, index)}
               ></CustomTextField>
             ))}
-          </Box>
+          </Box> */}
+          <Box
+  sx={{
+    width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+  }}
+>
+  {imagesToDraw.map((el, index) => (
+    <Box
+      key={index}
+      sx={{
+        width: "23%",
+        height: "112px",
+        position: "relative",
+       
+        borderRadius: "8px",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        "&:hover": {
+          borderColor: "#000",
+        },
+      }}
+    >
+      {/* Если изображение есть, отображаем его */}
+      {el?.fileUrl ? (
+        <img
+         src={el.fileUrl}
+          alt="preview"
+          style={{
+            width: "96px",
+            height: "96px",
+            borderRadius: "8px",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        // Если изображения нет, отображаем иконку
+        <MyIconFile style={{ width: "96px", height: "96px", color: "#ccc" }} />
+      )}
+
+      {/* Скрытый input для загрузки файлов */}
+      <input
+        type="file"
+        accept="image/*"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          opacity: 0,
+          border: "none", // Убираем рамку
+          outline: "none", // Убираем фокусное выделение
+          cursor: "pointer",
+        }}
+        onChange={(e) => onHandleAddPhoto(e, index)}
+      />
+    </Box>
+  ))}
+</Box>
           <Typography sx={{ marginTop: "15px" }}>Описание товара</Typography>
           <CustomTextField
             margin="dense"

@@ -50,6 +50,10 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     }
   }, [open]);
 
+  useEffect(() => {
+console.log(imageToSend)
+  },[imageToSend])
+
   const onSigninSubmitCategory = async () => {
     setisOpenRequestProgressModal(true);
     close()
@@ -71,11 +75,11 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
     }
   };
 
-  const onSigninSubmitCategoryImage = async () => {
+  const onSigninSubmitCategoryImage = async (id) => {
     setisOpenRequestProgressModal(true);
     close()
     try {
-      await postCategoryImage({image: imageToSend}).unwrap();
+      await postCategoryImage({image: imageToSend, id: id}).unwrap();
       refetch();
       close();
     } catch (err) {
@@ -150,16 +154,14 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
   
         // Конвертируем изображение в Base64 (если это нужно)
         const fileBase64 = await convertToBase64(imageToSend);
-        console.log("Созданная картинка:", fileBase64);
+        console.log("Созданная картинка:", imageToSend, fileBase64);
         // Формируем объект для отправки изображения
-        const imagePayload = {
-          fileBase64: fileBase64
-        }
+        const imagePayload = [{fileBase64: fileBase64}]
          
      
   
         // Отправляем запрос на загрузку изображения
-        await postCategoryImage({id: newCategory.id, image: imagePayload}).unwrap();
+        await postCategoryImage({id: Number(newCategory.id), image: imagePayload}).unwrap();
         console.log("Изображение загружено успешно!");
       } else {
         // Логика для подкатегории
@@ -170,7 +172,7 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
           store: { id: storeId },
           extId: "f9043c07-e394-4b50-a256-aadbf1ce6573",
           color: "b9f6ca",
-          images: [imageToSend],
+         
         }).unwrap();
         console.log("Подкатегория создана успешно!");
       }
@@ -205,18 +207,13 @@ const ModalAdd = ({ open, close, modalCategory, refetch }) => {
                 setErrorText("");
                 setImageSelect(image.src);
                 // Если вам нужно отправить изображение на сервер, используйте FormData
-                convertToBase64(file).then(base64 => {
-                  setImageToSend({
-                      id: 0,
-                      fileBase64: base64,
-                      imagePath: file.name, // или другой путь, если необходимо
-                      isFirst: true,
-                  });
+               
+                  setImageToSend(file);
 
-                console.log(999, imageToSend, "id", category)
+                console.log(999, image.src)
                   // Отправка данных на сервер
                   
-              });
+          
                 // Отправка изображения на сервер
                 // dispatch(uploadImage(formData)); // Пример действия для загрузки изображения
             }
