@@ -89,13 +89,17 @@ triggerGetProduct({
   },[currentPage])
 
   useEffect(() => {
-    setFilter((prev) => {
-      // Обновляем prev.storeHouse в иммутабельном стиле
-      return {
-        ...prev,
-        storeHouse: [...prev.storeHouse, Number(storeHouse)] // Добавляем новое значение в массив
-      };
-    });
+    // setFilter((prev) => {
+    //   // Обновляем prev.storeHouse в иммутабельном стиле
+    //   return {
+    //     ...prev,
+    //     storeHouse: [...prev.storeHouse, Number(storeHouse)] // Добавляем новое значение в массив
+    //   };
+    // });
+    setFilter((prev) => ({
+      ...prev,
+      storeHouse: Number(storeHouse),
+    }));
   },[storeHouse])
 
   const handleCheckboxChange = (event) => {
